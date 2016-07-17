@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context="com.xdandroid.hellocamera2.Camera2Activity">
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.xdandroid.hellocamera2.Camera2Activity"
+        tools:showIn="@layout/activity_camera2">
+
+        <TextureView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/texture_camera_preview"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <View
+                android:layout_width="52px"
+                android:id="@+id/view_camera_dark0"
+                android:layout_height="match_parent"
+                android:background="#8A000000"/>
+
+            <LinearLayout
+                android:layout_width="896px"
+                android:layout_height="match_parent"
+                android:id="@+id/view_camera_dark1"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="80px"
+                    android:background="#8A000000"
+                    android:gravity="center"
+                    android:textSize="28px"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/tv_camera_hint"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0px"
+                    android:layout_weight="1">
+                    
+                    <View
+                        android:layout_width="6px"
+                        android:layout_height="110px"
+                        android:layout_gravity="top|left"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="6px"
+                        android:layout_height="110px"
+                        android:layout_gravity="top|right"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="6px"
+                        android:layout_height="110px"
+                        android:layout_gravity="bottom|left"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="6px"
+                        android:layout_height="110px"
+                        android:layout_gravity="bottom|right"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="110px"
+                        android:layout_height="6px"
+                        android:layout_gravity="top|left"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="110px"
+                        android:layout_height="6px"
+                        android:layout_gravity="top|right"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="110px"
+                        android:layout_height="6px"
+                        android:layout_gravity="bottom|left"
+                        android:background="@color/colorPrimary"/>
+
+                    <View
+                        android:layout_width="110px"
+                        android:layout_height="6px"
+                        android:layout_gravity="bottom|right"
+                        android:background="@color/colorPrimary"/>
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="52px"
+                    android:background="#8A000000"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="0px"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="#8A000000"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_camera_button"
+            android:layout_width="144px"
+            android:layout_height="144px"
+            android:layout_gravity="center_vertical|left"
+            android:layout_marginLeft="1000px"
+            android:src="@drawable/selector"/>
+
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

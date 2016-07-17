@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HelloCamera2</string>
+    <string name="title_activity_main">HelloCamera2</string>
+    <string name="title_activity_camera">拍照</string>
+    <string name="title_activity_camera2">拍照</string>
+
+</resources>

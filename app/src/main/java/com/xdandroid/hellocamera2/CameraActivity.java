@@ -75,35 +75,31 @@ public class CameraActivity extends BaseCameraActivity {
                 //防止手抖连续多次点击造成错误
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .compose(this.bindToLifecycle())
-                .subscribe(new Observer<Void>() {
-                    public void onCompleted() {}
-                    public void onError(Throwable e) {}
-                    public void onNext(Void aVoid) {
-                        if (mCamera == null) return;
-                        mCamera.takePicture(null, null, (data, camera) -> Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+                .subscribe(aVoid -> {
+                    if (mCamera == null) return;
+                    mCamera.takePicture(null, null, (data, camera) -> Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+                        try {
+                            if (file.exists()) file.delete();
+                            FileOutputStream fos = new FileOutputStream(file);
+                            fos.write(data);
                             try {
-                                if (file.exists()) file.delete();
-                                FileOutputStream fos = new FileOutputStream(file);
-                                fos.write(data);
-                                try {
-                                    fos.close();
-                                } catch (Exception ignored) {}
-                                subscriber.onNext(200);
-                            } catch (Exception e) {
-                                subscriber.onError(e);
-                            }
-                        }).subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .compose(CameraActivity.this.bindToLifecycle())
-                                .subscribe(integer -> {
-                                    setResult(integer, getIntent().putExtra("file", file.toString()));
-                                    finishCalled = true;
-                                    finish();
-                                }, throwable -> {
-                                    throwable.printStackTrace();
-                                    mCamera.startPreview();
-                                }));
-                    }
+                                fos.close();
+                            } catch (Exception ignored) {}
+                            subscriber.onNext(200);
+                        } catch (Exception e) {
+                            subscriber.onError(e);
+                        }
+                    }).subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .compose(CameraActivity.this.bindToLifecycle())
+                            .subscribe(integer -> {
+                                setResult(integer, getIntent().putExtra("file", file.toString()));
+                                finishCalled = true;
+                                finish();
+                            }, throwable -> {
+                                throwable.printStackTrace();
+                                mCamera.startPreview();
+                            }));
                 });
     }
 
@@ -112,25 +108,21 @@ public class CameraActivity extends BaseCameraActivity {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.bindToLifecycle())
-                .subscribe(new Observer<Camera>() {
-                    public void onCompleted() {}
-                    public void onError(Throwable e) {}
-                    public void onNext(Camera camera) {
-                        if (camera == null) {
-                            Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-                            finishCalled = true;
-                            finish();
-                            return;
-                        }
-                        mCamera = camera;
-                        mPreview = new CameraPreview(CameraActivity.this, mCamera, throwable -> {
-                            Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-                            finishCalled = true;
-                            finish();
-                        });
-                        flCameraPreview.addView(mPreview);
-                        initParams();
+                .subscribe(camera -> {
+                    if (camera == null) {
+                        Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+                        finishCalled = true;
+                        finish();
+                        return;
                     }
+                    mCamera = camera;
+                    mPreview = new CameraPreview(CameraActivity.this, mCamera, throwable -> {
+                        Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                        finishCalled = true;
+                        finish();
+                    });
+                    flCameraPreview.addView(mPreview);
+                    initParams();
                 });
     }
 
@@ -199,13 +191,14 @@ public class CameraActivity extends BaseCameraActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        try {
+            mCamera.stopPreview();
+            mCamera.setPreviewDisplay(null);
+            mCamera.release();
+            mCamera = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (!finishCalled) finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        CameraUtils.releaseCamera(mCamera);
-        mCamera = null;
     }
 }

@@ -10,6 +10,8 @@
         android:name=".app.App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:windowSoftInputMode="stateHidden"
+        android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
         android:theme="@style/AppTheme">
 
         <meta-data
@@ -24,10 +26,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.WhiteWindow"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -37,12 +39,16 @@
             android:name=".CameraActivity"
             android:label="@string/title_activity_camera"
             android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".Camera2Activity"
             android:label="@string/title_activity_camera2"
             android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

@@ -884,13 +884,7 @@ public class Camera2Activity extends BaseCameraActivity {
                  */
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .compose(this.bindToLifecycle())
-                .subscribe(new Observer<Void>() {
-                    public void onCompleted() {}
-                    public void onError(Throwable e) {}
-                    public void onNext(Void aVoid) {
-                        takePicture();
-                    }
-                });
+                .subscribe(aVoid -> takePicture());
     }
 
     @Override
@@ -918,13 +912,8 @@ public class Camera2Activity extends BaseCameraActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (!finishCalled) finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
         closeCamera();
         stopBackgroundThread();
+        if (!finishCalled) finish();
     }
 }

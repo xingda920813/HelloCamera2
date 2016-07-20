@@ -108,18 +108,4 @@ public class CameraUtils {
             e.printStackTrace();
         }
     }
-
-    /**
-     * 释放Camera.
-     * @param camera Camera
-     */
-    public static void releaseCamera(Camera camera) {
-        try {
-            camera.stopPreview();
-            camera.setPreviewDisplay(null);
-            camera.release();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

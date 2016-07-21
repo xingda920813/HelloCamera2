@@ -17,7 +17,7 @@ public class BitmapUtils {
     /**
      * 将拍照得到的图片按照取景框（亮色区域）的范围进行裁剪.
      * 对于1280x720的屏幕，裁剪起始点为坐标(52, 80)，裁剪后，位图尺寸为896x588.（由layout xml定义的布局计算得到）
-     * 以上参数将按照图片的实际大小，进行等比例换算。
+     * 以上参数将按照图片的实际大小，进行等比例划算。
      * @param originalBitmap 拍照得到的Bitmap
      * @return 裁剪之后的Bitmap
      */
@@ -31,7 +31,9 @@ public class BitmapUtils {
         int y = (int) (80 * scaleY + 0.5);
         int width = (int) (896 * scaleX + 0.5);
         int height = (int) (588 * scaleY + 0.5);
-        return Bitmap.createBitmap(originalBitmap, x, y, width, height);
+        Bitmap bitmap = Bitmap.createBitmap(originalBitmap, x, y, width, height);
+        originalBitmap.recycle();
+        return bitmap;
     }
 
     /**
@@ -43,14 +45,14 @@ public class BitmapUtils {
     public static Bitmap rotate(Bitmap sourceBitmap) {
         int sourceWidth = sourceBitmap.getWidth();
         int sourceHeight = sourceBitmap.getHeight();
-        boolean shouldRotate = sourceWidth < sourceHeight;
-        if (!shouldRotate) return sourceBitmap;
+        if (sourceWidth >= sourceHeight) return sourceBitmap;
         int maxInWidthAndHeight = Math.max(sourceWidth, sourceHeight);
         Bitmap destBitmap = Bitmap.createBitmap(maxInWidthAndHeight, maxInWidthAndHeight, Bitmap.Config.ARGB_8888);
         Matrix m = new Matrix();
         m.setRotate(-90, maxInWidthAndHeight / 2, maxInWidthAndHeight / 2);
         Canvas canvas = new Canvas(destBitmap);
         canvas.drawBitmap(sourceBitmap, m, new Paint());
+        sourceBitmap.recycle();
         return destBitmap;
     }
 
@@ -68,7 +70,39 @@ public class BitmapUtils {
         BitmapFactory.decodeFile(filePath.toString(), options);
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filePath.toString(), options);
+        //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
+        Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
+        inSampleSizedBitmap.recycle();
+        return scaledBitmap;
+    }
+
+    /**
+     * 将图片文件压缩到所需的大小，返回位图对象.
+     * 若原图尺寸小于需要压缩到的尺寸，则返回原图.
+     * 该方法考虑了可能需要在压缩后进行旋转的情况，因此可放心传入reqWidth和reqHeight，而无需考虑图片方向.
+     * @param filePath 图片File
+     * @param reqWidth 压缩后的宽度
+     * @param reqHeight 压缩后的高度
+     * @return 压缩后的Bitmap. 若原图尺寸小于需要压缩到的尺寸，则返回File解码得到的Bitmap.
+     */
+    @SuppressWarnings("SuspiciousNameCombination")
+    public static Bitmap compressConsideringRotation(File filePath, int reqWidth, int reqHeight) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath.toString(), options);
+        boolean shouldRotate = options.outWidth < options.outHeight;
+        if (shouldRotate) {
+            options.inSampleSize = calculateInSampleSize(options, reqHeight, reqWidth);
+        } else {
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        }
+        options.inJustDecodeBounds = false;
+        //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
+        Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
+        inSampleSizedBitmap.recycle();
+        return scaledBitmap;
     }
 
     /**
@@ -113,7 +147,7 @@ public class BitmapUtils {
         try {
             if (file.exists()) file.delete();
             fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
             fos.flush();
             bitmap.recycle();
             fos.close();

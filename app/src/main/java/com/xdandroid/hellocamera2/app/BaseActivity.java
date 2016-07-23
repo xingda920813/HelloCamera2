@@ -1,15 +1,13 @@
 package com.xdandroid.hellocamera2.app;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.os.*;
+import android.support.annotation.*;
+import android.support.v7.widget.*;
+import android.view.*;
 
-import com.xdandroid.hellocamera2.R;
+import com.xdandroid.hellocamera2.*;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+import butterknife.*;
 
 public abstract class BaseActivity extends RxActivity {
 

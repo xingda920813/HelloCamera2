@@ -1,16 +1,10 @@
 package com.xdandroid.hellocamera2.util;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
+import android.graphics.*;
 
-import com.xdandroid.hellocamera2.app.App;
+import com.xdandroid.hellocamera2.app.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class BitmapUtils {
 

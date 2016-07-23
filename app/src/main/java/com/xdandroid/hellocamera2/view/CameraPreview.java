@@ -1,10 +1,9 @@
 package com.xdandroid.hellocamera2.view;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.hardware.Camera;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.annotation.*;
+import android.content.*;
+import android.hardware.*;
+import android.view.*;
 
 @SuppressLint("ViewConstructor")
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {

@@ -1,57 +1,27 @@
 package com.xdandroid.hellocamera2;
 
-import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.Point;
-import android.graphics.RectF;
-import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
-import android.media.ImageReader;
-import android.os.Build;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
+import android.content.*;
+import android.graphics.*;
+import android.hardware.camera2.*;
+import android.hardware.camera2.params.*;
+import android.media.*;
+import android.os.*;
+import android.support.annotation.*;
+import android.util.*;
 import android.util.Size;
-import android.util.SparseIntArray;
-import android.view.Surface;
-import android.view.TextureView;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 
-import com.jakewharton.rxbinding.view.RxView;
-import com.xdandroid.hellocamera2.app.App;
-import com.xdandroid.hellocamera2.app.BaseCameraActivity;
-import com.xdandroid.hellocamera2.util.Camera2Utils;
+import com.jakewharton.rxbinding.view.*;
+import com.xdandroid.hellocamera2.app.*;
+import com.xdandroid.hellocamera2.util.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.nio.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import butterknife.BindView;
-import rx.Observer;
+import butterknife.*;
 
 /**
  * Camera2 API. Android Lollipop 及以后版本的 Android 使用 Camera2 API.

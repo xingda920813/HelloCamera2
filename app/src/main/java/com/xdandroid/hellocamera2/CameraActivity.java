@@ -1,30 +1,22 @@
 package com.xdandroid.hellocamera2;
 
-import android.hardware.Camera;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.hardware.*;
+import android.view.*;
+import android.widget.*;
 
-import com.jakewharton.rxbinding.view.RxView;
-import com.xdandroid.hellocamera2.app.App;
-import com.xdandroid.hellocamera2.app.BaseCameraActivity;
-import com.xdandroid.hellocamera2.util.CameraUtils;
-import com.xdandroid.hellocamera2.view.CameraPreview;
+import com.jakewharton.rxbinding.view.*;
+import com.xdandroid.hellocamera2.app.*;
+import com.xdandroid.hellocamera2.util.*;
+import com.xdandroid.hellocamera2.view.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import butterknife.BindView;
+import butterknife.*;
 import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.android.schedulers.*;
+import rx.schedulers.*;
 
 /**
  * Camera API. Android KitKat 及以前版本的 Android 使用 Camera API.

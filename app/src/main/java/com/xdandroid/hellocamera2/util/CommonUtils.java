@@ -1,8 +1,8 @@
 package com.xdandroid.hellocamera2.util;
 
-import com.xdandroid.hellocamera2.app.App;
+import com.xdandroid.hellocamera2.app.*;
 
-import java.io.File;
+import java.io.*;
 
 public class CommonUtils {
 

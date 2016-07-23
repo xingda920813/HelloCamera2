@@ -1,19 +1,18 @@
 package com.xdandroid.hellocamera2.util;
 
-import android.graphics.drawable.Animatable;
-import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.ViewGroup;
+import android.graphics.drawable.*;
+import android.net.*;
+import android.support.annotation.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
-import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.drawee.backends.pipeline.*;
+import com.facebook.drawee.controller.*;
+import com.facebook.drawee.view.*;
+import com.facebook.imagepipeline.common.*;
+import com.facebook.imagepipeline.image.*;
+import com.facebook.imagepipeline.request.*;
 
 public class FrescoUtils {
 

@@ -1,15 +1,14 @@
 package com.xdandroid.hellocamera2.util;
 
-import android.hardware.Camera;
-import android.support.annotation.Nullable;
+import android.hardware.*;
+import android.support.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.*;
+import rx.android.schedulers.*;
+import rx.schedulers.*;
 
 public class CameraUtils {
 
@@ -88,7 +87,7 @@ public class CameraUtils {
                 .flatMap(Observable::from)
                 //若是为了拍摄照片，那么越清晰越好，直接返回true，表示所有的尺寸都可以通过筛选进入下一步;
                 //若只是为了预览，则尺寸不要超过1920x1080，否则相机带宽吃紧。这也是Camera2 API的要求.
-                .filter(size -> forTakingPicture || size.width <= 1920 && size.height <= 1080)
+                .filter(size -> forTakingPicture || ((long) size.width) * ((long) size.height) <= 1920 * 1080)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(size -> {

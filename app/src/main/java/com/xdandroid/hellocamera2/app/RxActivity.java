@@ -1,18 +1,13 @@
 package com.xdandroid.hellocamera2.app;
 
-import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
+import android.os.*;
+import android.support.annotation.*;
 
-import com.trello.rxlifecycle.ActivityEvent;
-import com.trello.rxlifecycle.ActivityLifecycleProvider;
-import com.trello.rxlifecycle.LifecycleTransformer;
-import com.trello.rxlifecycle.RxLifecycle;
-import com.zhy.autolayout.AutoLayoutActivity;
+import com.trello.rxlifecycle.*;
+import com.zhy.autolayout.*;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import rx.*;
+import rx.subjects.*;
 
 /**
  * 从com.trello.rxlifecycle.components.support.RxAppCompatActivity拷贝而来.

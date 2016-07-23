@@ -1,13 +1,10 @@
 package com.xdandroid.hellocamera2.util;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+import android.os.*;
+import android.support.annotation.*;
 import android.util.Size;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2Utils {

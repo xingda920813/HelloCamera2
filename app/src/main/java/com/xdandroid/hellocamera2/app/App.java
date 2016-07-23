@@ -1,17 +1,18 @@
 package com.xdandroid.hellocamera2.app;
 
-import android.app.Application;
-import android.os.Handler;
+import android.app.*;
+import android.os.*;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.drawee.backends.pipeline.*;
+import com.facebook.imagepipeline.core.*;
 
 public class App extends Application {
 
     /**
      * 启动照相Intent的requestCode.
      */
-    public static final int REQUEST_TAKE_PHOTO = 100;
+    public static final int TAKE_PHOTO_CUSTOM = 100;
+    public static final int TAKE_PHOTO_SYSTEM = 200;
     /**
      * 主线程Handler.
      */

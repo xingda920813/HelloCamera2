@@ -25,7 +25,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="cn.edyd.driver.FileProvider"
+            android:authorities="com.xdandroid.hellocamera2.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

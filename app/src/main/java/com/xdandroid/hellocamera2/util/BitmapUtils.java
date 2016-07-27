@@ -26,9 +26,7 @@ public class BitmapUtils {
         int y = (int) (80 * scaleY + 0.5);
         int width = (int) (896 * scaleX + 0.5);
         int height = (int) (588 * scaleY + 0.5);
-        Bitmap bitmap = Bitmap.createBitmap(originalBitmap, x, y, width, height);
-        originalBitmap.recycle();
-        return bitmap;
+        return Bitmap.createBitmap(originalBitmap, x, y, width, height);
     }
 
     /**
@@ -48,7 +46,6 @@ public class BitmapUtils {
         m.setRotate(-90, maxInWidthAndHeight / 2, maxInWidthAndHeight / 2);
         Canvas canvas = new Canvas(destBitmap);
         canvas.drawBitmap(sourceBitmap, m, new Paint());
-        sourceBitmap.recycle();
         return destBitmap;
     }
 
@@ -70,9 +67,7 @@ public class BitmapUtils {
         options.inJustDecodeBounds = false;
         //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
         Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
-        inSampleSizedBitmap.recycle();
-        return scaledBitmap;
+        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -99,9 +94,7 @@ public class BitmapUtils {
         options.inJustDecodeBounds = false;
         //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
         Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
-        inSampleSizedBitmap.recycle();
-        return scaledBitmap;
+        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -121,9 +114,7 @@ public class BitmapUtils {
         options.inJustDecodeBounds = false;
         //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
         Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
-        inSampleSizedBitmap.recycle();
-        return scaledBitmap;
+        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -184,15 +175,16 @@ public class BitmapUtils {
     }
 
     /**
-     * 将Bitmap写入文件，文件位于外置存储上该应用包名目录的cache子目录中.
+     * 将Bitmap写入文件，文件位于data/data/${packageName}/cache.
      *
      * @param bitmap   要写入的Bitmap
      * @param fileName 文件名
      * @return 文件对应的File.
      */
     public static File writeBitmapToFile(Bitmap bitmap, String fileName) {
-        String pathTo = App.app.getExternalCacheDir() + "/" + fileName;
-        File file = new File(pathTo);
+        File dir = new File(App.app.getCacheDir(), "images");
+        if (!dir.exists()) dir.mkdirs();
+        File file = new File(dir, fileName);
         FileOutputStream fos;
         try {
             if (file.exists()) file.delete();

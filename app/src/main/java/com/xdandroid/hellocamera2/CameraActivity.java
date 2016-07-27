@@ -108,8 +108,8 @@ public class CameraActivity extends BaseCameraActivity {
                         return;
                     }
                     mCamera = camera;
-                    mPreview = new CameraPreview(CameraActivity.this, mCamera, throwable -> {
-                        Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                    mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
+                        if (showToast) Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
                         finishCalled = true;
                         finish();
                     });
@@ -122,7 +122,7 @@ public class CameraActivity extends BaseCameraActivity {
         Camera.Parameters params = mCamera.getParameters();
         //若相机支持自动开启/关闭闪光灯，则使用. 否则闪光灯总是关闭的.
         List<String> flashModes = params.getSupportedFlashModes();
-        if (flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
+        if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
             params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         }
         previewBestFound = false;

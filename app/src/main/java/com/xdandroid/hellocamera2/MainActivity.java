@@ -6,6 +6,7 @@ import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
+import android.support.v4.content.*;
 import android.support.v7.app.*;
 import android.view.*;
 import android.widget.*;
@@ -78,8 +79,10 @@ public class MainActivity extends BaseActivity {
                         public void onPermissionGranted() {
                             /*调用系统相机进行拍照*/
                             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                            mFile = CommonUtils.createFile("mFile");
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mFile));
+                            mFile = CommonUtils.createImageFile("mFile");
+                            Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.xdandroid.hellocamera2.FileProvider", mFile);
+                            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                             startActivityForResult(intent, App.TAKE_PHOTO_SYSTEM);
                         }
 
@@ -105,7 +108,7 @@ public class MainActivity extends BaseActivity {
                             } else {
                                 intent = new Intent(MainActivity.this, CameraActivity.class);
                             }
-                            mFile = CommonUtils.createFile("mFile");
+                            mFile = CommonUtils.createImageFile("mFile");
                             //文件保存的路径和名称
                             intent.putExtra("file", mFile.toString());
                             //拍照时的提示文本
@@ -156,7 +159,7 @@ public class MainActivity extends BaseActivity {
                         mHasSelectedOnce = true;
                     });
         } else if (requestCode == App.TAKE_PHOTO_SYSTEM) {
-            mFile = CommonUtils.createFile("mFile");
+            mFile = CommonUtils.createImageFile("mFile");
             Observable.just(mFile)
                       //读入File，压缩为指定大小的Bitmap
                       .flatMap((Func1<File, Observable<Bitmap>>) file -> Observable.create(

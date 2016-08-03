@@ -65,9 +65,8 @@ public class BitmapUtils {
         BitmapFactory.decodeFile(filePath.toString(), options);
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
         options.inJustDecodeBounds = false;
-        //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
-        Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
+        Bitmap fullBitmap = BitmapFactory.decodeFile(filePath.toString());
+        return Bitmap.createScaledBitmap(fullBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -92,9 +91,8 @@ public class BitmapUtils {
             options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
         }
         options.inJustDecodeBounds = false;
-        //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
-        Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
+        Bitmap fullBitmap = BitmapFactory.decodeFile(filePath.toString());
+        return Bitmap.createScaledBitmap(fullBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -112,9 +110,8 @@ public class BitmapUtils {
         BitmapFactory.decodeFile(filePath.toString(), options);
         options.inSampleSize = calculateInSampleSizeBySquare(options, reqSquarePixels);
         options.inJustDecodeBounds = false;
-        //inSampleSize通过SubSampling实现，只是节省了读入Bitmap后占用的内存，Bitmap本身的像素还是那么多，文件体积不会减小。
-        Bitmap inSampleSizedBitmap = BitmapFactory.decodeFile(filePath.toString(), options);
-        return Bitmap.createScaledBitmap(inSampleSizedBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
+        Bitmap fullBitmap = BitmapFactory.decodeFile(filePath.toString());
+        return Bitmap.createScaledBitmap(fullBitmap, options.outWidth / options.inSampleSize, options.outHeight / options.inSampleSize, false);
     }
 
     /**
@@ -122,8 +119,8 @@ public class BitmapUtils {
      * 考虑了options的长宽比可能与req中的比例不同的情况.
      * 该方法通过分辨率面积得到inSampleSize，因此不存在图片方向问题.
      *
-     * @param options   BitmapFactory.Options
-     * @param reqSquarePixels  压缩后的分辨率面积
+     * @param options         BitmapFactory.Options
+     * @param reqSquarePixels 压缩后的分辨率面积
      * @return 计算得到的BitmapFactory.Options.inSampleSize
      */
     private static int calculateInSampleSizeBySquare(BitmapFactory.Options options, long reqSquarePixels) {
@@ -175,7 +172,7 @@ public class BitmapUtils {
     }
 
     /**
-     * 将Bitmap写入文件，文件位于data/data/${packageName}/cache.
+     * 将Bitmap写入文件，文件位于外置存储上该应用包名目录的cache子目录中.
      *
      * @param bitmap   要写入的Bitmap
      * @param fileName 文件名

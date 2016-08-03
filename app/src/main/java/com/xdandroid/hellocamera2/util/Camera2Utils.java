@@ -36,14 +36,24 @@ public class Camera2Utils {
      * @return 满足16:9比例的最大尺寸(宽*高); 若找不到，返回最大尺寸（不一定满足16:9）.
      */
     public static Size findBestSize(Size[] sizeArray) {
+        List<Size> tooLargeSizes = new ArrayList<>();
         List<Size> immutableSizeList = Arrays.asList(sizeArray);
         //Arrays.asList返回的List是不可变的，需重新包装为java.util.ArrayList.
         List<Size> sizeList = new ArrayList<>(immutableSizeList);
-        Collections.sort(sizeList,
-                (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs.getHeight()));
+        Collections.sort(sizeList, (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs.getHeight()));
         for (Size size : sizeList) {
-            if (isWide(size)) return size;
+            if (!isWide(size)) continue;
+            boolean notTooLarge = ((long) size.getWidth()) * ((long) size.getHeight()) <= 1920 * 1080;
+            if (!notTooLarge) {
+                tooLargeSizes.add(size);
+                continue;
+            }
+            return size;
         }
-        return sizeList.get(0);
+        if (tooLargeSizes.size() > 0) {
+            return tooLargeSizes.get(0);
+        } else {
+            return sizeList.get(0);
+        }
     }
 }

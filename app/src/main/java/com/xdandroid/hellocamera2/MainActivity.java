@@ -2,6 +2,7 @@ package com.xdandroid.hellocamera2;
 
 import android.*;
 import android.content.*;
+import android.content.pm.*;
 import android.graphics.*;
 import android.net.*;
 import android.os.*;
@@ -81,7 +82,12 @@ public class MainActivity extends BaseActivity {
                             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             mFile = CommonUtils.createImageFile("mFile");
                             Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.xdandroid.hellocamera2.FileProvider", mFile);
-                            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            List<ResolveInfo> resolvedIntentActivities = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+                            for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+                                String packageName = resolvedIntentInfo.activityInfo.packageName;
+                                grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            }
+                            grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                             startActivityForResult(intent, App.TAKE_PHOTO_SYSTEM);
                         }
@@ -137,7 +143,7 @@ public class MainActivity extends BaseActivity {
             Observable.just(mFile)
                     //将File解码为Bitmap
                     .flatMap((Func1<File, Observable<Bitmap>>) file -> Observable.create(
-                            subscriber -> subscriber.onNext(BitmapUtils.decodeFile(file))))
+                            subscriber -> subscriber.onNext(BitmapUtils.compressToResolution(file, 1920 * 1080))))
                     //裁剪Bitmap
                     .flatMap((Func1<Bitmap, Observable<Bitmap>>) bitmap -> Observable.create(
                             subscriber -> subscriber.onNext(BitmapUtils.crop(bitmap))))

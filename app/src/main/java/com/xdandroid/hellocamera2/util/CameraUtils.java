@@ -76,7 +76,9 @@ public class CameraUtils {
      * @param callback 找到最佳尺寸后的回调.
      */
     public void findBestSize(boolean forTakingPicture, List<Camera.Size> sizeList, OnBestSizeFoundCallback callback) {
-        subscription = Observable.just(sizeList)
+        List<Camera.Size> tooLargeSizes = new ArrayList<>();
+        subscription = Observable
+                .just(sizeList)
                 //先按照面积从大到小排序
                 .map(sizes -> {
                     Collections.sort(sizes,
@@ -85,15 +87,31 @@ public class CameraUtils {
                 })
                 //一个一个地激发事件
                 .flatMap(Observable::from)
-                //若是为了拍摄照片，那么越清晰越好，直接返回true，表示所有的尺寸都可以通过筛选进入下一步;
                 //若只是为了预览，则尺寸不要超过1920x1080，否则相机带宽吃紧。这也是Camera2 API的要求.
-                .filter(size -> forTakingPicture || ((long) size.width) * ((long) size.height) <= 1920 * 1080)
+                //若是为了拍摄照片，则尺寸也不要超过1920x1080，否则上传的文件过大.
+                .filter(CameraUtils::isWide)
+                .filter(size -> {
+                    boolean notTooLarge = forTakingPicture || ((long) size.width) * ((long) size.height) <= 1920 * 1080;
+                    if (!notTooLarge) tooLargeSizes.add(size);
+                    return notTooLarge;
+                })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(size -> {
-                            if (isWide(size)) callback.bestSizeJustFound(size);
-                        }, throwable -> callback.bestSizeJustFound(sizeList.get(0)),
-                        () -> callback.bestSizeJustFound(sizeList.get(0)));
+                .subscribe(callback::bestSizeJustFound, throwable -> {
+                            if (tooLargeSizes.size() > 0) {
+                                callback.bestSizeJustFound(tooLargeSizes.get(0));
+                            } else {
+                                callback.bestSizeJustFound(sizeList.get(0));
+                            }
+                        },
+                        () -> {
+                            if (tooLargeSizes.size() > 0) {
+                                callback.bestSizeJustFound(tooLargeSizes.get(0));
+                            } else {
+                                callback.bestSizeJustFound(sizeList.get(0));
+                            }
+                        }
+                );
     }
 
     /**

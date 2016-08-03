@@ -32,6 +32,7 @@ public class CameraActivity extends BaseCameraActivity {
     private File file;
     private Camera mCamera;
     private CameraPreview mPreview;
+    private Camera.Size mLowPreviewSize, mLowPictureSize;
 
     /**
      * 预览的最佳尺寸是否已找到
@@ -120,6 +121,8 @@ public class CameraActivity extends BaseCameraActivity {
 
     private void initParams() {
         Camera.Parameters params = mCamera.getParameters();
+        mLowPreviewSize = params.getPreviewSize();
+        mLowPictureSize = params.getPictureSize();
         //若相机支持自动开启/关闭闪光灯，则使用. 否则闪光灯总是关闭的.
         List<String> flashModes = params.getSupportedFlashModes();
         if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
@@ -156,11 +159,11 @@ public class CameraActivity extends BaseCameraActivity {
         List<String> focusModes = params.getSupportedFocusModes();
         if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-            mCamera.setParameters(params);
+            setParameters(params);
         } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
             //进到这里，说明不支持连续对焦模式，退回到点击屏幕进行一次自动对焦.
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-            mCamera.setParameters(params);
+            setParameters(params);
             //点击屏幕进行一次自动对焦.
             flCameraPreview.setOnClickListener(v -> CameraUtils.autoFocus(mCamera));
             //4秒后进行第一次自动对焦，之后每隔8秒进行一次自动对焦.
@@ -171,6 +174,24 @@ public class CameraActivity extends BaseCameraActivity {
                     })
                     .compose(this.bindToLifecycle())
                     .subscribe(aLong -> CameraUtils.autoFocus(mCamera));
+        }
+    }
+
+    private void setParameters(Camera.Parameters params) {
+        try {
+            mCamera.setParameters(params);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                params.setPreviewSize(mLowPreviewSize.width, mLowPreviewSize.height);
+                mCamera.setParameters(params);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                try {
+                    params.setPictureSize(mLowPictureSize.width, mLowPictureSize.height);
+                    mCamera.setParameters(params);
+                } catch (Exception ignored) {}
+            }
         }
     }
 

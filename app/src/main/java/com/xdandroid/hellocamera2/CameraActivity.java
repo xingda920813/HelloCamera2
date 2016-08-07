@@ -207,8 +207,17 @@ public class CameraActivity extends BaseCameraActivity {
         try {
             mCamera.stopPreview();
             mCamera.setPreviewDisplay(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             mCamera.release();
             mCamera = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            mPreview.getHolder().getSurface().release();
         } catch (Exception e) {
             e.printStackTrace();
         }

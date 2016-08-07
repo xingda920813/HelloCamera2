@@ -12,7 +12,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      * 需要让Activity/Fragment处理Throwable时，提供的回调监听类.
      */
     public interface ThrowableListener {
-        public void onThrowable(Throwable throwable, boolean showToast);
+        void onThrowable(Throwable throwable, boolean showToast);
     }
 
     private SurfaceHolder mHolder;
@@ -44,7 +44,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        mHolder.removeCallback(this);
     }
 
     @Override
@@ -52,6 +52,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (mHolder.getSurface() == null) return;
         try {
             mCamera.stopPreview();
+        } catch (Exception ignored) {}
+        try {
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
         } catch (Exception e) {

@@ -81,7 +81,7 @@ public class MainActivity extends BaseActivity {
                             /*调用系统相机进行拍照*/
                             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             mFile = CommonUtils.createImageFile("mFile");
-                            Uri uri = FileProvider.getUriForFile(MainActivity.this, "com.xdandroid.hellocamera2.FileProvider", mFile);
+                            Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".FileProvider", mFile);
                             List<ResolveInfo> resolvedIntentActivities = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
                             for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
                                 String packageName = resolvedIntentInfo.activityInfo.packageName;
@@ -118,7 +118,7 @@ public class MainActivity extends BaseActivity {
                             //文件保存的路径和名称
                             intent.putExtra("file", mFile.toString());
                             //拍照时的提示文本
-                            intent.putExtra("hint", "");
+                            intent.putExtra("hint", "请将证件放入框内。将裁剪图片，只保留框内区域的图像");
                             //是否使用整个画面作为取景区域(全部为亮色区域)
                             intent.putExtra("hideBounds", false);
                             startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
@@ -142,14 +142,11 @@ public class MainActivity extends BaseActivity {
             mFile = new File(data.getStringExtra("file"));
             Observable.just(mFile)
                     //将File解码为Bitmap
-                    .flatMap((Func1<File, Observable<Bitmap>>) file -> Observable.create(
-                            subscriber -> subscriber.onNext(BitmapUtils.compressToResolution(file, 1920 * 1080))))
+                      .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
                     //裁剪Bitmap
-                    .flatMap((Func1<Bitmap, Observable<Bitmap>>) bitmap -> Observable.create(
-                            subscriber -> subscriber.onNext(BitmapUtils.crop(bitmap))))
+                      .map(BitmapUtils::crop)
                     //将Bitmap写入文件
-                    .flatMap((Func1<Bitmap, Observable<File>>) bitmap -> Observable.create(
-                            subscriber -> subscriber.onNext(BitmapUtils.writeBitmapToFile(bitmap, "mFile"))))
+                      .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .compose(this.bindToLifecycle())
@@ -168,11 +165,10 @@ public class MainActivity extends BaseActivity {
             mFile = CommonUtils.createImageFile("mFile");
             Observable.just(mFile)
                       //读入File，压缩为指定大小的Bitmap
-                      .flatMap((Func1<File, Observable<Bitmap>>) file -> Observable.create(
-                              subscriber -> subscriber.onNext(BitmapUtils.compressToResolution(file, 1920 * 1080))))
+                      .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
+                      .map(BitmapUtils::rotate)
                       //将Bitmap写入文件
-                      .flatMap((Func1<Bitmap, Observable<File>>) bitmap -> Observable.create(
-                              subscriber -> subscriber.onNext(BitmapUtils.writeBitmapToFile(bitmap, "mFile"))))
+                      .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
                       .subscribeOn(Schedulers.io())
                       .observeOn(AndroidSchedulers.mainThread())
                       .compose(this.bindToLifecycle())

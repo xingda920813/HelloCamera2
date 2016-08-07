@@ -884,6 +884,9 @@ public class Camera2Activity extends BaseCameraActivity {
         super.onPause();
         closeCamera();
         stopBackgroundThread();
+        try {
+            mTextureView.getSurfaceTexture().release();
+        } catch (Exception ignored) {}
         if (!finishCalled) finish();
     }
 }

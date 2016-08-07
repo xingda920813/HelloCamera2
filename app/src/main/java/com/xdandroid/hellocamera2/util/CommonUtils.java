@@ -8,12 +8,12 @@ public class CommonUtils {
 
     /**
      * dp转px
-     * @param dipValue dp
+     * @param dpValue dp
      * @return px
      */
-    static int dp2px(float dipValue) {
+    static int dp2px(float dpValue) {
         final float scale = App.app.getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale + 0.5f);
+        return (int) (dpValue * scale + 0.5f);
     }
 
     /**

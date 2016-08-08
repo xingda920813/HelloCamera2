@@ -72,33 +72,30 @@ public class CameraActivity extends BaseCameraActivity {
               .compose(this.bindToLifecycle())
               .subscribe(aVoid -> {
                   if (mCamera == null) return;
-                  mCamera.takePicture(null, null, (data, camera) -> Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
-                      try {
-                          if (file.exists()) file.delete();
-                          FileOutputStream fos = new FileOutputStream(file);
-                          fos.write(data);
-                          try {
-                              fos.close();
-                          } catch (Exception ignored) {}
-                          subscriber.onNext(200);
-                      } catch (Exception e) {
-                          subscriber.onError(e);
-                      }
-                  }).subscribeOn(Schedulers.io())
-                                                                              .observeOn(AndroidSchedulers
-                                                                                      .mainThread())
-                                                                              .compose(CameraActivity.this
-                                                                                      .bindToLifecycle())
-                                                                              .subscribe(integer -> {
-                                                                                  setResult(integer, getIntent()
-                                                                                          .putExtra("file", file
-                                                                                                  .toString()));
-                                                                                  finishCalled = true;
-                                                                                  finish();
-                                                                              }, throwable -> {
-                                                                                  throwable.printStackTrace();
-                                                                                  mCamera.startPreview();
-                                                                              }));
+                  mCamera.takePicture(null, null, (data, camera) -> Observable
+                          .create((Observable.OnSubscribe<Integer>) subscriber -> {
+                              try {
+                                  if (file.exists()) file.delete();
+                                  FileOutputStream fos = new FileOutputStream(file);
+                                  fos.write(data);
+                                  try {
+                                      fos.close();
+                                  } catch (Exception ignored) {}
+                                  subscriber.onNext(200);
+                              } catch (Exception e) {
+                                  subscriber.onError(e);
+                              }
+                          }).subscribeOn(Schedulers.io())
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .compose(CameraActivity.this.bindToLifecycle())
+                          .subscribe(integer -> {
+                              setResult(integer, getIntent().putExtra("file", file.toString()));
+                              finishCalled = true;
+                              finish();
+                          }, throwable -> {
+                              throwable.printStackTrace();
+                              mCamera.startPreview();
+                          }));
               });
     }
 
@@ -140,7 +137,8 @@ public class CameraActivity extends BaseCameraActivity {
         }
         previewBestFound = false;
         pictureBestFound = false;
-        //寻找最佳预览尺寸，即满足16:9的不超过1920x1080的最大尺寸; 若找不到，则使用不超过1920x1080的最大尺寸.
+        //寻找最佳预览尺寸，即满足16:9比例，且不超过1920x1080的最大尺寸;若找不到，则使用满足16:9的最大尺寸.
+        //若仍找不到，使用最大尺寸;详见CameraUtils.findBestSize方法.
         CameraUtils previewUtils = new CameraUtils();
         List<Camera.Size> previewSizes = params.getSupportedPreviewSizes();
         previewUtils.findBestSize(false, previewSizes, previewUtils.new OnBestSizeFoundCallback() {
@@ -151,7 +149,8 @@ public class CameraActivity extends BaseCameraActivity {
                 if (pictureBestFound) initFocusParams(params);
             }
         }, 1920 * 1080);
-        //寻找最佳拍照尺寸，即满足16:9的最大尺寸; 若找不到，则使用最大尺寸.
+        //寻找最佳拍照尺寸，即满足16:9比例，且不超过maxPicturePixels指定的像素数的最大Size;若找不到，则使用满足16:9的最大尺寸.
+        //若仍找不到，使用最大尺寸;详见CameraUtils.findBestSize方法.
         CameraUtils pictureUtils = new CameraUtils();
         List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
         pictureUtils.findBestSize(true, pictureSizes, pictureUtils.new OnBestSizeFoundCallback() {

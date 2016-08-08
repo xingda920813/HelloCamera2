@@ -11,6 +11,7 @@ public class Camera2Utils {
 
     /**
      * 比较两个int值的大小.
+     *
      * @param lhs 左侧值
      * @param rhs 右侧值
      * @return lhs < rhs, -1; lhs = rhs, 0; lhs > rhs, 1;
@@ -21,6 +22,7 @@ public class Camera2Utils {
 
     /**
      * 判断是否是16：9的Size, 允许误差5%.
+     *
      * @param size Size
      * @return 是否是16：9的Size
      */
@@ -30,20 +32,26 @@ public class Camera2Utils {
     }
 
     /**
-     * 从sizeArray中找到满足16:9比例的最大尺寸(宽*高).
-     * 若找不到，返回最大尺寸（不一定满足16:9）.
-     * @param sizeArray StreamConfigurationMap.getOutputSizes(ImageFormat.JPEG)得到的sizeArray
-     * @return 满足16:9比例的最大尺寸(宽*高); 若找不到，返回最大尺寸（不一定满足16:9）.
+     * 从sizeArray中找到满足16:9比例，且不超过maxPicturePixels指定的像素数的最大Size.
+     * 若找不到，则选择满足16:9比例的最大Size（像素数可能超过maxPicturePixels)，若仍找不到，返回最大Size。
+     *
+     * @param sizeArray        StreamConfigurationMap.getOutputSizes(ImageFormat.JPEG)得到的sizeArray
+     * @param maxPicturePixels 最大可接受的照片像素数
+     * @return 找到满足16:9比例，且不超过maxPicturePixels指定的像素数的最大Size
      */
-    public static Size findBestSize(Size[] sizeArray) {
+    public static Size findBestSize(Size[] sizeArray, long maxPicturePixels) {
+        //满足16:9，但超过maxAcceptedPixels的过大Size
         List<Size> tooLargeSizes = new ArrayList<>();
         List<Size> immutableSizeList = Arrays.asList(sizeArray);
         //Arrays.asList返回的List是不可变的，需重新包装为java.util.ArrayList.
         List<Size> sizeList = new ArrayList<>(immutableSizeList);
-        Collections.sort(sizeList, (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs.getHeight()));
+        //按面积由大到小排序
+        Collections.sort(sizeList, (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs
+                .getHeight()));
         for (Size size : sizeList) {
+            //非16:9的尺寸无视
             if (!isWide(size)) continue;
-            boolean notTooLarge = ((long) size.getWidth()) * ((long) size.getHeight()) <= 1920 * 1080;
+            boolean notTooLarge = ((long) size.getWidth()) * ((long) size.getHeight()) <= maxPicturePixels;
             if (!notTooLarge) {
                 tooLargeSizes.add(size);
                 continue;

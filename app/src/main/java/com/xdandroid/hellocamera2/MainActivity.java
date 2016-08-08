@@ -39,7 +39,8 @@ public class MainActivity extends BaseActivity {
     @OnClick(R.id.iv)
     void onImageViewClick(View v) {
         if (mHasSelectedOnce) {
-            View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog, null, false);
+            View dialogView = LayoutInflater.from(MainActivity.this)
+                                            .inflate(R.layout.dialog, null, false);
             SimpleDraweeView ivBig = (SimpleDraweeView) dialogView.findViewById(R.id.iv_dialog_big);
             FrescoUtils.load("file://" + mFile.toString()).into(ivBig);
             AlertDialog dialog = new AlertDialog
@@ -78,15 +79,17 @@ public class MainActivity extends BaseActivity {
                     .setPermissionListener(new PermissionListener() {
                         @Override
                         public void onPermissionGranted() {
-                            /*调用系统相机进行拍照*/
+                            //调用系统相机进行拍照
                             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             mFile = CommonUtils.createImageFile("mFile");
                             Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".FileProvider", mFile);
                             List<ResolveInfo> resolvedIntentActivities = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
                             for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
                                 String packageName = resolvedIntentInfo.activityInfo.packageName;
+                                //授予所有能响应ACTION_IMAGE_CAPTURE Intent的App Uri读写权限
                                 grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             }
+                            //授予自己Uri读写权限
                             grantUriPermission(getPackageName(), uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                             startActivityForResult(intent, App.TAKE_PHOTO_SYSTEM);
@@ -121,6 +124,8 @@ public class MainActivity extends BaseActivity {
                             intent.putExtra("hint", "请将证件放入框内。将裁剪图片，只保留框内区域的图像");
                             //是否使用整个画面作为取景区域(全部为亮色区域)
                             intent.putExtra("hideBounds", false);
+                            //最大允许的拍照尺寸（像素数）
+                            intent.putExtra("maxPicturePixels", (long) 3840 * 2160);
                             startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
                         }
 
@@ -141,31 +146,32 @@ public class MainActivity extends BaseActivity {
         if (requestCode == App.TAKE_PHOTO_CUSTOM) {
             mFile = new File(data.getStringExtra("file"));
             Observable.just(mFile)
-                    //将File解码为Bitmap
+                      //将File解码为Bitmap
                       .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
-                    //裁剪Bitmap
+                      //裁剪Bitmap
                       .map(BitmapUtils::crop)
-                    //将Bitmap写入文件
+                      //将Bitmap写入文件
                       .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .compose(this.bindToLifecycle())
-                    .subscribe(file -> {
-                        mFile = file;
-                        Uri uri = Uri.parse("file://" + mFile.toString());
-                        ImagePipeline imagePipeline = Fresco.getImagePipeline();
-                        //清除该Uri的Fresco缓存. 若不清除，对于相同文件名的图片，Fresco会直接使用缓存而使得Drawee得不到更新.
-                        imagePipeline.evictFromMemoryCache(uri);
-                        imagePipeline.evictFromDiskCache(uri);
-                        FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(iv);
-                        btnTakepicture.setText("重新拍照");
-                        mHasSelectedOnce = true;
-                    });
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .compose(this.bindToLifecycle())
+                      .subscribe(file -> {
+                          mFile = file;
+                          Uri uri = Uri.parse("file://" + mFile.toString());
+                          ImagePipeline imagePipeline = Fresco.getImagePipeline();
+                          //清除该Uri的Fresco缓存. 若不清除，对于相同文件名的图片，Fresco会直接使用缓存而使得Drawee得不到更新.
+                          imagePipeline.evictFromMemoryCache(uri);
+                          imagePipeline.evictFromDiskCache(uri);
+                          FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(iv);
+                          btnTakepicture.setText("重新拍照");
+                          mHasSelectedOnce = true;
+                      });
         } else if (requestCode == App.TAKE_PHOTO_SYSTEM) {
             mFile = CommonUtils.createImageFile("mFile");
             Observable.just(mFile)
                       //读入File，压缩为指定大小的Bitmap
                       .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
+                      //系统相机拍出的照片方向可能是竖的，这里判断如果是竖的，就旋转90度变为横向
                       .map(BitmapUtils::rotate)
                       //将Bitmap写入文件
                       .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))

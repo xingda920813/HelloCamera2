@@ -9,19 +9,17 @@ import com.facebook.imagepipeline.core.*;
 public class App extends Application {
 
     /**
-     * 启动照相Intent的RequestCode.
+     * 启动照相Intent的RequestCode.自定义相机.
      */
-    //自定义相机
     public static final int TAKE_PHOTO_CUSTOM = 100;
-    //系统相机
+    /**
+     * 启动照相Intent的RequestCode.系统相机.
+     */
     public static final int TAKE_PHOTO_SYSTEM = 200;
     /**
      * 主线程Handler.
      */
     public static Handler mHandler;
-    /**
-     * Application对象.
-     */
     public static App app;
 
     @Override

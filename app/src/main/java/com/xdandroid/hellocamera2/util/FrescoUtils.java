@@ -27,8 +27,9 @@ public class FrescoUtils {
 
         /**
          * 适配AutoLayout的辅助方法.
-         * 将控件的width(dp), height(dp)传入resize(int, int)，即可将图片DownScale到与控件一样大.
-         * @param widthDp 控件的width(dp)
+         * 将控件的width(dp), height(dp)传入resize(int, int)，即可将图片向下缩放(DownScale)到与控件一样大.
+         *
+         * @param widthDp  控件的width(dp)
          * @param heightDp 控件的height(dp)
          * @return FrescoInner
          */
@@ -60,6 +61,7 @@ public class FrescoUtils {
                         void setDraweeSize(ImageInfo imageInfo) {
                             if (imageInfo == null) return;
                             ViewGroup.LayoutParams params = v.getLayoutParams();
+                            //拿到图片的宽高，给控件的LayoutParams设进去
                             params.width = imageInfo.getWidth();
                             params.height = imageInfo.getHeight();
                             v.setLayoutParams(params);
@@ -86,7 +88,9 @@ public class FrescoUtils {
 
                             void makeSizeFixed(ImageInfo imageInfo) {
                                 if (imageInfo == null) return;
-                                v.setAspectRatio(((float) imageInfo.getWidth()) / ((float) imageInfo.getHeight()));
+                                //计算图片的宽高比，给Drawee设置AspectRatio，让Drawee自适应设为wrap_content的那一个维度
+                                v.setAspectRatio(((float) imageInfo.getWidth()) / ((float) imageInfo
+                                        .getHeight()));
                             }
 
                             @Override

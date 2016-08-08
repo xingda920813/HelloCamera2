@@ -25,10 +25,10 @@ import butterknife.*;
 
 /**
  * Camera2 API. Android Lollipop 及以后版本的 Android 使用 Camera2 API.
- *
+ * <p>
  * 从https://github.com/googlesamples/android-Camera2Basic/blob/master/Application/src/main/java/
  * com/example/android/camera2basic/Camera2BasicFragment.java拷贝而来.
- *
+ * <p>
  * 进行了一些修改, 以文档注释的形式写出.
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -44,6 +44,11 @@ public class Camera2Activity extends BaseCameraActivity {
      * finish()是否已调用过
      */
     private volatile boolean finishCalled;
+
+    /**
+     * 最大允许的拍照尺寸（像素数）
+     */
+    private long mMaxPicturePixels;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
@@ -402,13 +407,15 @@ public class Camera2Activity extends BaseCameraActivity {
                 }
 
                 // For still image captures, we use the largest available size.
-                /**
-                 * 替换了寻找最大尺寸的算法，使其满足16:9的要求.
-                 */
                 /*Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());*/
-                Size largest = Camera2Utils.findBestSize(map.getOutputSizes(ImageFormat.JPEG));
+                /**
+                 * 替换了寻找最大尺寸的算法.
+                 * 从OutputSizes中找到满足16:9比例，且像素数不超过3840*2160的最大Size.
+                 * 若找不到，则选择满足16:9比例的最大Size（像素数可能超过3840*2160)，若仍找不到，返回最大Size。
+                 */
+                Size largest = Camera2Utils.findBestSize(map.getOutputSizes(ImageFormat.JPEG), mMaxPicturePixels);
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
                         ImageFormat.JPEG, /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
@@ -777,7 +784,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Saves a JPEG {@link Image} into the specified {@link File}.
      */
-    private class ImageSaver implements Runnable {
+    class ImageSaver implements Runnable {
 
         /**
          * The JPEG image
@@ -848,13 +855,14 @@ public class Camera2Activity extends BaseCameraActivity {
             viewDark0.setVisibility(View.INVISIBLE);
             viewDark1.setVisibility(View.INVISIBLE);
         }
+        mMaxPicturePixels = getIntent().getLongExtra("maxPicturePixels", 3840 * 2160);
         RxView.clicks(ivCameraButton)
-                /**
-                 * 防止手抖连续多次点击造成错误
-                 */
-                .throttleFirst(2, TimeUnit.SECONDS)
-                .compose(this.bindToLifecycle())
-                .subscribe(aVoid -> takePicture());
+              /**
+               * 防止手抖连续多次点击造成错误
+               */
+              .throttleFirst(2, TimeUnit.SECONDS)
+              .compose(this.bindToLifecycle())
+              .subscribe(aVoid -> takePicture());
     }
 
     @Override

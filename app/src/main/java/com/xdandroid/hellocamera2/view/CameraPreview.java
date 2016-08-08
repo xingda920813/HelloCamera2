@@ -39,12 +39,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     /**
-     * 由Activity/Fragment处理Camera的释放，此处为空实现.
+     * 由Activity/Fragment处理Camera的释放.
+     *
      * @param holder SurfaceHolder
      */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        mHolder.removeCallback(this);
+        try {
+            mHolder.removeCallback(this);
+        } catch (Exception ignored) {}
     }
 
     @Override

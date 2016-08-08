@@ -33,6 +33,7 @@ public class CameraActivity extends BaseCameraActivity {
     private Camera mCamera;
     private CameraPreview mPreview;
     private Camera.Size mLowPreviewSize, mLowPictureSize;
+    private long mMaxPicturePixels;
 
     /**
      * 预览的最佳尺寸是否已找到
@@ -63,65 +64,74 @@ public class CameraActivity extends BaseCameraActivity {
             viewDark0.setVisibility(View.INVISIBLE);
             viewDark1.setVisibility(View.INVISIBLE);
         }
+        mMaxPicturePixels = getIntent().getLongExtra("maxPicturePixels", 3840 * 2160);
         initCamera();
         RxView.clicks(ivCameraButton)
-                //防止手抖连续多次点击造成错误
-                .throttleFirst(2, TimeUnit.SECONDS)
-                .compose(this.bindToLifecycle())
-                .subscribe(aVoid -> {
-                    if (mCamera == null) return;
-                    mCamera.takePicture(null, null, (data, camera) -> Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
-                        try {
-                            if (file.exists()) file.delete();
-                            FileOutputStream fos = new FileOutputStream(file);
-                            fos.write(data);
-                            try {
-                                fos.close();
-                            } catch (Exception ignored) {}
-                            subscriber.onNext(200);
-                        } catch (Exception e) {
-                            subscriber.onError(e);
-                        }
-                    }).subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .compose(CameraActivity.this.bindToLifecycle())
-                            .subscribe(integer -> {
-                                setResult(integer, getIntent().putExtra("file", file.toString()));
-                                finishCalled = true;
-                                finish();
-                            }, throwable -> {
-                                throwable.printStackTrace();
-                                mCamera.startPreview();
-                            }));
-                });
+              //防止手抖连续多次点击造成错误
+              .throttleFirst(2, TimeUnit.SECONDS)
+              .compose(this.bindToLifecycle())
+              .subscribe(aVoid -> {
+                  if (mCamera == null) return;
+                  mCamera.takePicture(null, null, (data, camera) -> Observable.create((Observable.OnSubscribe<Integer>) subscriber -> {
+                      try {
+                          if (file.exists()) file.delete();
+                          FileOutputStream fos = new FileOutputStream(file);
+                          fos.write(data);
+                          try {
+                              fos.close();
+                          } catch (Exception ignored) {}
+                          subscriber.onNext(200);
+                      } catch (Exception e) {
+                          subscriber.onError(e);
+                      }
+                  }).subscribeOn(Schedulers.io())
+                                                                              .observeOn(AndroidSchedulers
+                                                                                      .mainThread())
+                                                                              .compose(CameraActivity.this
+                                                                                      .bindToLifecycle())
+                                                                              .subscribe(integer -> {
+                                                                                  setResult(integer, getIntent()
+                                                                                          .putExtra("file", file
+                                                                                                  .toString()));
+                                                                                  finishCalled = true;
+                                                                                  finish();
+                                                                              }, throwable -> {
+                                                                                  throwable.printStackTrace();
+                                                                                  mCamera.startPreview();
+                                                                              }));
+              });
     }
 
     private void initCamera() {
-        Observable.create((Observable.OnSubscribe<Camera>) subscriber -> subscriber.onNext(CameraUtils.getCamera()))
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.bindToLifecycle())
-                .subscribe(camera -> {
-                    if (camera == null) {
-                        Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-                        finishCalled = true;
-                        finish();
-                        return;
-                    }
-                    mCamera = camera;
-                    mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
-                        if (showToast) Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-                        finishCalled = true;
-                        finish();
-                    });
-                    flCameraPreview.addView(mPreview);
-                    initParams();
-                });
+        Observable.create((Observable.OnSubscribe<Camera>) subscriber -> subscriber.onNext(CameraUtils
+                .getCamera()))
+                  .subscribeOn(Schedulers.newThread())
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .compose(this.bindToLifecycle())
+                  .subscribe(camera -> {
+                      if (camera == null) {
+                          Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+                          finishCalled = true;
+                          finish();
+                          return;
+                      }
+                      mCamera = camera;
+                      mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
+                          if (showToast)
+                              Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                          finishCalled = true;
+                          finish();
+                      });
+                      flCameraPreview.addView(mPreview);
+                      initParams();
+                  });
     }
 
     private void initParams() {
         Camera.Parameters params = mCamera.getParameters();
+        //默认预览尺寸，通常是所支持的最小尺寸，用于遇到错误时Fallback
         mLowPreviewSize = params.getPreviewSize();
+        //默认拍照尺寸，通常是所支持的最小尺寸，用于遇到错误时Fallback
         mLowPictureSize = params.getPictureSize();
         //若相机支持自动开启/关闭闪光灯，则使用. 否则闪光灯总是关闭的.
         List<String> flashModes = params.getSupportedFlashModes();
@@ -140,7 +150,7 @@ public class CameraActivity extends BaseCameraActivity {
                 params.setPreviewSize(size.width, size.height);
                 if (pictureBestFound) initFocusParams(params);
             }
-        });
+        }, 1920 * 1080);
         //寻找最佳拍照尺寸，即满足16:9的最大尺寸; 若找不到，则使用最大尺寸.
         CameraUtils pictureUtils = new CameraUtils();
         List<Camera.Size> pictureSizes = params.getSupportedPictureSizes();
@@ -151,7 +161,7 @@ public class CameraActivity extends BaseCameraActivity {
                 params.setPictureSize(size.width, size.height);
                 if (previewBestFound) initFocusParams(params);
             }
-        });
+        }, mMaxPicturePixels);
     }
 
     private void initFocusParams(Camera.Parameters params) {
@@ -168,12 +178,13 @@ public class CameraActivity extends BaseCameraActivity {
             flCameraPreview.setOnClickListener(v -> CameraUtils.autoFocus(mCamera));
             //4秒后进行第一次自动对焦，之后每隔8秒进行一次自动对焦.
             Observable.timer(4, TimeUnit.SECONDS)
-                    .flatMap(aLong -> {
-                        CameraUtils.autoFocus(mCamera);
-                        return Observable.interval(8, TimeUnit.SECONDS).compose(this.bindToLifecycle());
-                    })
-                    .compose(this.bindToLifecycle())
-                    .subscribe(aLong -> CameraUtils.autoFocus(mCamera));
+                      .flatMap(aLong -> {
+                          CameraUtils.autoFocus(mCamera);
+                          return Observable.interval(8, TimeUnit.SECONDS)
+                                           .compose(this.bindToLifecycle());
+                      })
+                      .compose(this.bindToLifecycle())
+                      .subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }
 
@@ -181,11 +192,15 @@ public class CameraActivity extends BaseCameraActivity {
         try {
             mCamera.setParameters(params);
         } catch (Exception e) {
+            //非常罕见的情况
+            //个别机型在SupportPreviewSizes里汇报了支持某种预览尺寸，但实际是不支持的，设置进去就会抛出RuntimeException.
             e.printStackTrace();
             try {
+                //遇到上面所说的情况，只能设置一个最小的预览尺寸
                 params.setPreviewSize(mLowPreviewSize.width, mLowPreviewSize.height);
                 mCamera.setParameters(params);
             } catch (Exception e1) {
+                //到这里还有问题，就是拍照尺寸的锅了，同样只能设置一个最小的拍照尺寸
                 e1.printStackTrace();
                 try {
                     params.setPictureSize(mLowPictureSize.width, mLowPictureSize.height);

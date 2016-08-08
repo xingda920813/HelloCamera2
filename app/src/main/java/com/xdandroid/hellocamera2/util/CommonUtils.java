@@ -8,6 +8,7 @@ public class CommonUtils {
 
     /**
      * dp转px
+     *
      * @param dpValue dp
      * @return px
      */
@@ -18,6 +19,7 @@ public class CommonUtils {
 
     /**
      * 创建File对象，对应于data/data/${packageName}/cache/fileName.
+     *
      * @param fileName 文件名
      * @return File
      */

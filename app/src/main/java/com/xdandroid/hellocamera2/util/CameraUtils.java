@@ -99,7 +99,7 @@ public class CameraUtils {
                 .filter(size -> {
                     boolean notTooLarge;
                     if (forTakingPicture) {
-                        //若是为了拍摄照片，则尺寸不要超过指定的maxAcceptedPixels.
+                        //若是为了拍摄照片，则尺寸不要超过指定的maxPicturePixels.
                         notTooLarge = ((long) size.width) * ((long) size.height) <= maxPicturePixels;
                     } else {
                         //若只是为了预览，则尺寸不要超过1920x1080，否则相机带宽吃紧，这也是Camera2 API的要求.

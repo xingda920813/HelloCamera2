@@ -16,7 +16,7 @@ public class Camera2Utils {
      * @param rhs 右侧值
      * @return lhs < rhs, -1; lhs = rhs, 0; lhs > rhs, 1;
      */
-    private static int compare(int lhs, int rhs) {
+    public static int compare(int lhs, int rhs) {
         return lhs < rhs ? -1 : (lhs == rhs ? 0 : 1);
     }
 
@@ -26,7 +26,7 @@ public class Camera2Utils {
      * @param size Size
      * @return 是否是16：9的Size
      */
-    private static boolean isWide(Size size) {
+    public static boolean isWide(Size size) {
         double ratio = ((double) size.getWidth()) / ((double) size.getHeight());
         return ratio > 1.68 && ratio < 1.87;
     }

@@ -3,7 +3,6 @@ package com.xdandroid.hellocamera2;
 import android.*;
 import android.content.*;
 import android.content.pm.*;
-import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
@@ -25,7 +24,6 @@ import java.util.*;
 import butterknife.*;
 import rx.Observable;
 import rx.android.schedulers.*;
-import rx.functions.*;
 import rx.schedulers.*;
 
 public class MainActivity extends BaseActivity {
@@ -63,7 +61,8 @@ public class MainActivity extends BaseActivity {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.setHeaderTitle("选择要使用的相机");
         menu.add(0, 0, 0, "系统相机");
-        menu.add(0, 1, 1, "自定义相机");
+        menu.add(0, 1, 1, "自定义相机 (Camera API)");
+        menu.add(0, 2, 2, "自定义相机 (Camera2 API)");
     }
 
     @Override
@@ -101,7 +100,37 @@ public class MainActivity extends BaseActivity {
                         }
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
-        } else {
+        } else if (itemId == 1) {
+            new TedPermission(App.app)
+                    .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
+                    .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
+                    .setRationaleConfirmText("确定")
+                    .setDeniedCloseButtonText("关闭")
+                    .setGotoSettingButtonText("设定")
+                    .setPermissionListener(new PermissionListener() {
+                        @Override
+                        public void onPermissionGranted() {
+                            Intent intent;
+                            intent = new Intent(MainActivity.this, CameraActivity.class);
+                            mFile = CommonUtils.createImageFile("mFile");
+                            //文件保存的路径和名称
+                            intent.putExtra("file", mFile.toString());
+                            //拍照时的提示文本
+                            intent.putExtra("hint", "请将证件放入框内。将裁剪图片，只保留框内区域的图像");
+                            //是否使用整个画面作为取景区域(全部为亮色区域)
+                            intent.putExtra("hideBounds", false);
+                            //最大允许的拍照尺寸（像素数）
+                            intent.putExtra("maxPicturePixels", 3840 * 2160);
+                            startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
+                        }
+
+                        @Override
+                        public void onPermissionDenied(ArrayList<String> arrayList) {
+
+                        }
+                    }).setPermissions(new String[]{Manifest.permission.CAMERA})
+                    .check();
+        } else if (itemId == 2) {
             new TedPermission(App.app)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
@@ -115,7 +144,13 @@ public class MainActivity extends BaseActivity {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 intent = new Intent(MainActivity.this, Camera2Activity.class);
                             } else {
-                                intent = new Intent(MainActivity.this, CameraActivity.class);
+                                new AlertDialog
+                                        .Builder(MainActivity.this)
+                                        .setTitle("不支持的 API Level")
+                                        .setMessage("Camera2 API 仅在 API Level 21 以上可用, 当前 API Level : " + Build.VERSION.SDK_INT)
+                                        .setPositiveButton("确定", (dialog, which) -> dialog.dismiss())
+                                        .show();
+                                return;
                             }
                             mFile = CommonUtils.createImageFile("mFile");
                             //文件保存的路径和名称
@@ -125,7 +160,7 @@ public class MainActivity extends BaseActivity {
                             //是否使用整个画面作为取景区域(全部为亮色区域)
                             intent.putExtra("hideBounds", false);
                             //最大允许的拍照尺寸（像素数）
-                            intent.putExtra("maxPicturePixels", (long) 3840 * 2160);
+                            intent.putExtra("maxPicturePixels", 3840 * 2160);
                             startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
                         }
 
@@ -140,7 +175,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK && resultCode != 200) return;
         if (requestCode == App.TAKE_PHOTO_CUSTOM) {

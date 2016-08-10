@@ -17,14 +17,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private ThrowableListener throwableListener;
+    private ThrowableListener mThrowableListener;
 
     public CameraPreview(Context context, Camera camera, ThrowableListener l) {
         super(context);
         mCamera = camera;
         mHolder = getHolder();
         mHolder.addCallback(this);
-        throwableListener = l;
+        mThrowableListener = l;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
-            if (throwableListener != null) throwableListener.onThrowable(e, true);
+            if (mThrowableListener != null) mThrowableListener.onThrowable(e, true);
         }
     }
 
@@ -61,7 +61,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
-            if (throwableListener != null) throwableListener.onThrowable(e, false);
+            if (mThrowableListener != null) mThrowableListener.onThrowable(e, false);
         }
     }
 }

@@ -12,6 +12,7 @@ public class BitmapUtils {
      * 将拍照得到的图片按照取景框（亮色区域）的范围进行裁剪.
      * 对于1280x720的屏幕，裁剪起始点为坐标(52, 80)，裁剪后，位图尺寸为896x588.（由layout xml定义的布局计算得到）
      * 以上参数将按照图片的实际大小，进行等比例换算。
+     * 设备有无虚拟导航栏均能裁剪到正确的区域。
      *
      * @param originalBitmap 拍照得到的Bitmap
      * @return 裁剪之后的Bitmap
@@ -21,7 +22,12 @@ public class BitmapUtils {
         double originalHeight = originalBitmap.getHeight();
         //图片真正的宽度除以设计图的宽(1280)，得到相对于设计图的缩放比，用于后续裁剪起点坐标和裁剪区域大小的计算
         double scaleX = originalWidth / 1280;
-        scaleX = scaleX * 1.04;
+        //将虚拟导航栏的高度换算为1280x720设计图下所占的高度(px)，若设备没有虚拟导航栏，返回0.
+        int navBarHeightPxIn1280x720Ui = CommonUtils.px2dp(CommonUtils.getNavigationBarHeightInPx()) * /* 1280x720的设计图下，1dp = 2px */2;
+        //考虑到虚拟导航栏所占的高度，需要对scaleX进行修正，下面计算修正的倍乘系数
+        double scaleXMultiplier = ((double) 1280) / ((double) (1280 - navBarHeightPxIn1280x720Ui));
+        //修正scaleX，以保证在有无虚拟导航栏的情况下，裁剪区域均正确
+        scaleX = scaleX * scaleXMultiplier;
         double scaleY = originalHeight / 720;
         //在1280x720的设计图上，裁剪起点坐标(52, 80)
         int x = (int) (52 * scaleX + 0.5);
@@ -78,7 +84,7 @@ public class BitmapUtils {
      * @param reqSquarePixels 压缩后的分辨率面积
      * @return 计算得到的压缩比
      */
-    private static double calculateCompressRatioBySquare(BitmapFactory.Options options, long reqSquarePixels) {
+    public static double calculateCompressRatioBySquare(BitmapFactory.Options options, long reqSquarePixels) {
         //原图像素数
         long squarePixels = options.outWidth * options.outHeight;
         //若原图像素数少于需要压缩到的像素数，不压缩（压缩比返回1）

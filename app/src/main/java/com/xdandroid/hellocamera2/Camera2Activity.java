@@ -855,7 +855,7 @@ public class Camera2Activity extends BaseCameraActivity {
             viewDark0.setVisibility(View.INVISIBLE);
             viewDark1.setVisibility(View.INVISIBLE);
         }
-        mMaxPicturePixels = getIntent().getLongExtra("maxPicturePixels", 3840 * 2160);
+        mMaxPicturePixels = getIntent().getIntExtra("maxPicturePixels", 3840 * 2160);
         RxView.clicks(ivCameraButton)
               /**
                * 防止手抖连续多次点击造成错误
@@ -892,9 +892,6 @@ public class Camera2Activity extends BaseCameraActivity {
         super.onPause();
         closeCamera();
         stopBackgroundThread();
-        try {
-            mTextureView.getSurfaceTexture().release();
-        } catch (Exception ignored) {}
         if (!finishCalled) finish();
     }
 }

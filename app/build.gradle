@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:24.+'
-    compile 'com.android.support:design:24.+'
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:design:+'
     compile 'com.zhy:autolayout:+'
     compile 'com.facebook.fresco:fresco:+'
     compile 'com.jakewharton:butterknife:+'

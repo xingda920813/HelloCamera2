@@ -4,7 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
     defaultConfig {
         applicationId "com.xdandroid.hellocamera2"
         minSdkVersion 14
@@ -19,7 +19,7 @@ android {
         }
     }
     dexOptions {
-        javaMaxHeapSize "2g"
+        javaMaxHeapSize "1g"
     }
     lintOptions {
         disable 'MissingTranslation'
@@ -46,5 +46,6 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding:+'
     compile 'com.github.ParkSangGwon:TedPermission:+'
     compile 'com.trello:rxlifecycle:+'
+    compile 'com.trello:rxlifecycle-android:+'
     compile 'com.trello:rxlifecycle-components:+'
 }

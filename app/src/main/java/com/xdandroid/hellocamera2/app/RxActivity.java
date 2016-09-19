@@ -4,16 +4,13 @@ import android.os.*;
 import android.support.annotation.*;
 
 import com.trello.rxlifecycle.*;
+import com.trello.rxlifecycle.android.*;
 import com.zhy.autolayout.*;
 
 import rx.*;
 import rx.subjects.*;
 
-/**
- * 从com.trello.rxlifecycle.components.support.RxAppCompatActivity拷贝而来.
- * 由继承AppCompatActivity改为继承AutoLayoutActivity以适配AutoLayout.
- */
-public class RxActivity extends AutoLayoutActivity implements ActivityLifecycleProvider {
+public class RxActivity extends AutoLayoutActivity implements LifecycleProvider<ActivityEvent> {
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 
@@ -35,12 +32,12 @@ public class RxActivity extends AutoLayoutActivity implements ActivityLifecycleP
     @NonNull
     @CheckResult
     public final <T> LifecycleTransformer<T> bindToLifecycle() {
-        return RxLifecycle.bindActivity(lifecycleSubject);
+        return RxLifecycleAndroid.bindActivity(lifecycleSubject);
     }
 
     @Override
     @CallSuper
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         lifecycleSubject.onNext(ActivityEvent.CREATE);
     }
@@ -80,4 +77,3 @@ public class RxActivity extends AutoLayoutActivity implements ActivityLifecycleP
         super.onDestroy();
     }
 }
-

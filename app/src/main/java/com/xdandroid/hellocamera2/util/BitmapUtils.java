@@ -1,12 +1,20 @@
 package com.xdandroid.hellocamera2.util;
 
 import android.graphics.*;
+import android.os.*;
 
 import com.xdandroid.hellocamera2.app.*;
 
 import java.io.*;
 
 public class BitmapUtils {
+
+    public static Bitmap cropStatusBar(Bitmap bitmap, int compressRatio) {
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / compressRatio, bitmap.getHeight() / compressRatio, false);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) return scaledBitmap;
+        int statusBarHeight = CommonUtils.dp2px(24);
+        return Bitmap.createBitmap(scaledBitmap, 0, statusBarHeight / compressRatio, scaledBitmap.getWidth(), scaledBitmap.getHeight() - statusBarHeight / compressRatio);
+    }
 
     /**
      * 将拍照得到的图片按照取景框（亮色区域）的范围进行裁剪.

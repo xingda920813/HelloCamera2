@@ -69,7 +69,7 @@ public class CameraActivity extends BaseCameraActivity {
         RxView.clicks(ivCameraButton)
               //防止手抖连续多次点击造成错误
               .throttleFirst(2, TimeUnit.SECONDS)
-              .compose(this.bindToLifecycle())
+              .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> {
                   if (mCamera == null) return;
                   mCamera.takePicture(null, null, (data, camera) -> Observable
@@ -87,7 +87,6 @@ public class CameraActivity extends BaseCameraActivity {
                               }
                           }).subscribeOn(Schedulers.io())
                           .observeOn(AndroidSchedulers.mainThread())
-                          .compose(CameraActivity.this.bindToLifecycle())
                           .subscribe(integer -> {
                               setResult(integer, getIntent().putExtra("file", file.toString()));
                               finishCalled = true;
@@ -104,7 +103,6 @@ public class CameraActivity extends BaseCameraActivity {
                 .getCamera()))
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
-                  .compose(this.bindToLifecycle())
                   .subscribe(camera -> {
                       if (camera == null) {
                           Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
@@ -179,10 +177,8 @@ public class CameraActivity extends BaseCameraActivity {
             Observable.timer(4, TimeUnit.SECONDS)
                       .flatMap(aLong -> {
                           CameraUtils.autoFocus(mCamera);
-                          return Observable.interval(8, TimeUnit.SECONDS)
-                                           .compose(this.bindToLifecycle());
+                          return Observable.interval(8, TimeUnit.SECONDS);
                       })
-                      .compose(this.bindToLifecycle())
                       .subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }

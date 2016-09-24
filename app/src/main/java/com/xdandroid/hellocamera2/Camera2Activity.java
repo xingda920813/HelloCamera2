@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import butterknife.*;
+import rx.android.schedulers.*;
 
 /**
  * Camera2 API. Android Lollipop 及以后版本的 Android 使用 Camera2 API.
@@ -809,10 +810,8 @@ public class Camera2Activity extends BaseCameraActivity {
                 if (mFile.exists()) mFile.delete();
                 FileOutputStream output = new FileOutputStream(mFile);
                 output.write(bytes);
-                try {
-                    mImage.close();
-                    output.close();
-                } catch (Exception ignored) {}
+                try {mImage.close();} catch (Exception ignored) {}
+                try {output.close();} catch (Exception ignored) {}
                 /**
                  * 拍照完成后返回MainActivity.
                  */
@@ -861,7 +860,7 @@ public class Camera2Activity extends BaseCameraActivity {
                * 防止手抖连续多次点击造成错误
                */
               .throttleFirst(2, TimeUnit.SECONDS)
-              .compose(this.bindToLifecycle())
+              .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> takePicture());
     }
 

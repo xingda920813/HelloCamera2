@@ -189,7 +189,6 @@ public class MainActivity extends BaseActivity {
                       .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
                       .subscribeOn(Schedulers.io())
                       .observeOn(AndroidSchedulers.mainThread())
-                      .compose(this.bindToLifecycle())
                       .subscribe(file -> {
                           mFile = file;
                           Uri uri = Uri.parse("file://" + mFile.toString());
@@ -212,7 +211,6 @@ public class MainActivity extends BaseActivity {
                       .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
                       .subscribeOn(Schedulers.io())
                       .observeOn(AndroidSchedulers.mainThread())
-                      .compose(this.bindToLifecycle())
                       .subscribe(file -> {
                           mFile = file;
                           //删除fresco的缓存

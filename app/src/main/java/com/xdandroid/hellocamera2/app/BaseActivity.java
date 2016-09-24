@@ -6,10 +6,12 @@ import android.support.v7.widget.*;
 import android.view.*;
 
 import com.xdandroid.hellocamera2.*;
+import com.xdandroid.hellocamera2.R;
+import com.zhy.autolayout.*;
 
 import butterknife.*;
 
-public abstract class BaseActivity extends RxActivity {
+public abstract class BaseActivity extends AutoLayoutActivity {
 
     private Unbinder unbinder;
 

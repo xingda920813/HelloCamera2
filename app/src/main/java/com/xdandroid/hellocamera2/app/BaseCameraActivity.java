@@ -4,9 +4,11 @@ import android.os.*;
 import android.support.annotation.*;
 import android.view.*;
 
+import com.zhy.autolayout.*;
+
 import butterknife.*;
 
-public abstract class BaseCameraActivity extends RxActivity {
+public abstract class BaseCameraActivity extends AutoLayoutActivity {
 
     private Unbinder unbinder;
 

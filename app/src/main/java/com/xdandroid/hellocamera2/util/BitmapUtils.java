@@ -31,7 +31,7 @@ public class BitmapUtils {
         //图片真正的宽度除以设计图的宽(1280)，得到相对于设计图的缩放比，用于后续裁剪起点坐标和裁剪区域大小的计算
         double scaleX = originalWidth / 1280;
         //将虚拟导航栏的高度换算为1280x720设计图下所占的高度(px)，若设备没有虚拟导航栏，返回0.
-        int navBarHeightPxIn1280x720Ui = CommonUtils.px2dp(CommonUtils.getNavigationBarHeightInPx()) * /* 1280x720的设计图下，1dp = 2px */2;
+        int navBarHeightPxIn1280x720Ui = CommonUtils.px2dp(CommonUtils.getNavigationBarHeightInPx()) * 2 /*1280x720的设计图下，1dp = 2px*/;
         //考虑到虚拟导航栏所占的高度，需要对scaleX进行修正，下面计算修正的倍乘系数
         double scaleXMultiplier = ((double) 1280) / ((double) (1280 - navBarHeightPxIn1280x720Ui));
         //修正scaleX，以保证在有无虚拟导航栏的情况下，裁剪区域均正确

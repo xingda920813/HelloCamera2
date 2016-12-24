@@ -36,25 +36,25 @@ import rx.android.schedulers.*;
 public class Camera2Activity extends BaseCameraActivity {
 
     @BindView(R.id.texture_camera_preview) TextureView mTextureView;
-    @BindView(R.id.iv_camera_button) ImageView ivCameraButton;
-    @BindView(R.id.tv_camera_hint) TextView tvCameraHint;
-    @BindView(R.id.view_camera_dark0) View viewDark0;
-    @BindView(R.id.view_camera_dark1) LinearLayout viewDark1;
+    @BindView(R.id.iv_camera_button) ImageView mIvCameraButton;
+    @BindView(R.id.tv_camera_hint) TextView mTvCameraHint;
+    @BindView(R.id.view_camera_dark0) View mViewDark0;
+    @BindView(R.id.view_camera_dark1) LinearLayout mViewDark1;
 
     /**
      * finish()是否已调用过
      */
-    private volatile boolean finishCalled;
+    volatile boolean mFinishCalled;
 
     /**
      * 最大允许的拍照尺寸（像素数）
      */
-    private long mMaxPicturePixels;
+    long mMaxPicturePixels;
 
     /**
      * Conversion from screen rotation to JPEG orientation.
      */
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -66,48 +66,48 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Tag for the {@link Log}.
      */
-    private static final String TAG = "Camera2BasicFragment";
+    static final String TAG = "Camera2BasicFragment";
 
     /**
      * Camera state: Showing camera preview.
      */
-    private static final int STATE_PREVIEW = 0;
+    static final int STATE_PREVIEW = 0;
 
     /**
      * Camera state: Waiting for the focus to be locked.
      */
-    private static final int STATE_WAITING_LOCK = 1;
+    static final int STATE_WAITING_LOCK = 1;
 
     /**
      * Camera state: Waiting for the exposure to be precapture state.
      */
-    private static final int STATE_WAITING_PRECAPTURE = 2;
+    static final int STATE_WAITING_PRECAPTURE = 2;
 
     /**
      * Camera state: Waiting for the exposure state to be something other than precapture.
      */
-    private static final int STATE_WAITING_NON_PRECAPTURE = 3;
+    static final int STATE_WAITING_NON_PRECAPTURE = 3;
 
     /**
      * Camera state: Picture was taken.
      */
-    private static final int STATE_PICTURE_TAKEN = 4;
+    static final int STATE_PICTURE_TAKEN = 4;
 
     /**
      * Max preview width that is guaranteed by Camera2 API
      */
-    private static final int MAX_PREVIEW_WIDTH = 1920;
+    static final int MAX_PREVIEW_WIDTH = 1920;
 
     /**
      * Max preview height that is guaranteed by Camera2 API
      */
-    private static final int MAX_PREVIEW_HEIGHT = 1080;
+    static final int MAX_PREVIEW_HEIGHT = 1080;
 
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
      * {@link TextureView}.
      */
-    private final TextureView.SurfaceTextureListener mSurfaceTextureListener
+    final TextureView.SurfaceTextureListener mSurfaceTextureListener
             = new TextureView.SurfaceTextureListener() {
 
         @Override
@@ -134,27 +134,27 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * ID of the current {@link CameraDevice}.
      */
-    private String mCameraId;
+    String mCameraId;
 
     /**
      * A {@link CameraCaptureSession } for camera preview.
      */
-    private CameraCaptureSession mCaptureSession;
+    CameraCaptureSession mCaptureSession;
 
     /**
      * A reference to the opened {@link CameraDevice}.
      */
-    private CameraDevice mCameraDevice;
+    CameraDevice mCameraDevice;
 
     /**
      * The {@link Size} of camera preview.
      */
-    private Size mPreviewSize;
+    Size mPreviewSize;
 
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
      */
-    private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
+    final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
         @Override
         public void onOpened(@NonNull CameraDevice cameraDevice) {
@@ -176,8 +176,8 @@ public class Camera2Activity extends BaseCameraActivity {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
-            Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-            finishCalled = true;
+            Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+            mFinishCalled = true;
             finish();
         }
 
@@ -186,28 +186,28 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * An additional thread for running tasks that shouldn't block the UI.
      */
-    private HandlerThread mBackgroundThread;
+    HandlerThread mBackgroundThread;
 
     /**
      * A {@link Handler} for running tasks in the background.
      */
-    private Handler mBackgroundHandler;
+    Handler mBackgroundHandler;
 
     /**
      * An {@link ImageReader} that handles still image capture.
      */
-    private ImageReader mImageReader;
+    ImageReader mImageReader;
 
     /**
      * This is the output file for our picture.
      */
-    private File mFile;
+    File mFile;
 
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
      * still image is ready to be saved.
      */
-    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
+    final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
 
         @Override
@@ -220,42 +220,42 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * {@link CaptureRequest.Builder} for the camera preview
      */
-    private CaptureRequest.Builder mPreviewRequestBuilder;
+    CaptureRequest.Builder mPreviewRequestBuilder;
 
     /**
      * {@link CaptureRequest} generated by {@link #mPreviewRequestBuilder}
      */
-    private CaptureRequest mPreviewRequest;
+    CaptureRequest mPreviewRequest;
 
     /**
      * The current state of camera state for taking pictures.
      *
      * @see #mCaptureCallback
      */
-    private int mState = STATE_PREVIEW;
+    int mState = STATE_PREVIEW;
 
     /**
-     * A {@link Semaphore} to prevent the app from exiting before closing the camera.
+     * A {@link Semaphore} to prevent the sApp from exiting before closing the camera.
      */
-    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+    Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     /**
      * Whether the current camera device supports Flash or not.
      */
-    private boolean mFlashSupported;
+    boolean mFlashSupported;
 
     /**
      * Orientation of the camera sensor
      */
-    private int mSensorOrientation;
+    int mSensorOrientation;
 
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
      */
-    private CameraCaptureSession.CaptureCallback mCaptureCallback
+    CameraCaptureSession.CaptureCallback mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
 
-        private void process(CaptureResult result) {
+        void process(CaptureResult result) {
             switch (mState) {
                 case STATE_PREVIEW: {
                     // We have nothing to do when the camera preview is working normally.
@@ -342,7 +342,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * @param aspectRatio       The aspect ratio
      * @return The optimal {@code Size}, or an arbitrary one if none were big enough
      */
-    private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
+    static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
                                           int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
 
         // Collect the supported resolutions that are at least as big as the preview Surface
@@ -387,8 +387,8 @@ public class Camera2Activity extends BaseCameraActivity {
      * @param width  The width of available size for camera preview
      * @param height The height of available size for camera preview
      */
-    @SuppressWarnings("ConstantConditions")
-    private void setUpCameraOutputs(int width, int height) {
+    @SuppressWarnings({"ConstantConditions", "SuspiciousNameCombination"})
+    void setUpCameraOutputs(int width, int height) {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             for (String cameraId : manager.getCameraIdList()) {
@@ -489,7 +489,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * Opens the camera.
      */
     @SuppressWarnings("MissingPermission")
-    private void openCamera(int width, int height) {
+    void openCamera(int width, int height) {
         setUpCameraOutputs(width, height);
         configureTransform(width, height);
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
@@ -500,8 +500,8 @@ public class Camera2Activity extends BaseCameraActivity {
             manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(App.app, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-            finishCalled = true;
+            Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+            mFinishCalled = true;
             finish();
         }
     }
@@ -509,7 +509,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Closes the current {@link CameraDevice}.
      */
-    private void closeCamera() {
+    void closeCamera() {
         try {
             mCameraOpenCloseLock.acquire();
             if (null != mCaptureSession) {
@@ -534,7 +534,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Starts a background thread and its {@link Handler}.
      */
-    private void startBackgroundThread() {
+    void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
@@ -543,7 +543,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Stops the background thread and its {@link Handler}.
      */
-    private void stopBackgroundThread() {
+    void stopBackgroundThread() {
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -557,7 +557,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Creates a new {@link CameraCaptureSession} for camera preview.
      */
-    private void createCameraPreviewSession() {
+    void createCameraPreviewSession() {
         try {
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
             assert texture != null;
@@ -599,8 +599,8 @@ public class Camera2Activity extends BaseCameraActivity {
                                         mCaptureCallback, mBackgroundHandler);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-                                finishCalled = true;
+                                Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                                mFinishCalled = true;
                                 finish();
                             }
                         }
@@ -608,15 +608,15 @@ public class Camera2Activity extends BaseCameraActivity {
                         @Override
                         public void onConfigureFailed(
                                 @NonNull CameraCaptureSession cameraCaptureSession) {
-                            Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-                            finishCalled = true;
+                            Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                            mFinishCalled = true;
                             finish();
                         }
                     }, null);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(App.app, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-            finishCalled = true;
+            Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+            mFinishCalled = true;
             finish();
         }
     }
@@ -629,7 +629,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * @param viewWidth  The width of `mTextureView`
      * @param viewHeight The height of `mTextureView`
      */
-    private void configureTransform(int viewWidth, int viewHeight) {
+    void configureTransform(int viewWidth, int viewHeight) {
         if (null == mTextureView || null == mPreviewSize) {
             return;
         }
@@ -656,14 +656,14 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Initiate a still image capture.
      */
-    private void takePicture() {
+    void takePicture() {
         lockFocus();
     }
 
     /**
      * Lock the focus as the first step for a still image capture.
      */
-    private void lockFocus() {
+    void lockFocus() {
         try {
             // This is how to tell the camera to lock focus.
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
@@ -681,7 +681,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * Run the precapture sequence for capturing a still image. This method should be called when
      * we get a response in {@link #mCaptureCallback} from {@link #lockFocus()}.
      */
-    private void runPrecaptureSequence() {
+    void runPrecaptureSequence() {
         try {
             // This is how to tell the camera to trigger.
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
@@ -699,7 +699,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * Capture a still picture. This method should be called when we get a response in
      * {@link #mCaptureCallback} from both {@link #lockFocus()}.
      */
-    private void captureStillPicture() {
+    void captureStillPicture() {
         try {
             if (null == mCameraDevice) {
                 return;
@@ -743,7 +743,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * @param rotation The screen rotation.
      * @return The JPEG orientation (one of 0, 90, 270, and 360)
      */
-    private int getOrientation(int rotation) {
+    int getOrientation(int rotation) {
         // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
         // We have to take that into account and rotate JPEG properly.
         // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
@@ -755,7 +755,7 @@ public class Camera2Activity extends BaseCameraActivity {
      * Unlock the focus. This method should be called when still image capture sequence is
      * finished.
      */
-    private void unlockFocus() {
+    void unlockFocus() {
         try {
             // Reset the auto-focus trigger
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
@@ -772,7 +772,7 @@ public class Camera2Activity extends BaseCameraActivity {
         }
     }
 
-    private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
+    void setAutoFlash(CaptureRequest.Builder requestBuilder) {
         /**
          * 若相机支持自动开启/关闭闪光灯，则使用. 否则闪光灯总是关闭的.
          */
@@ -790,17 +790,18 @@ public class Camera2Activity extends BaseCameraActivity {
         /**
          * The JPEG image
          */
-        private final Image mImage;
+        final Image mImage;
         /**
          * The file we save the image into.
          */
-        private final File mFile;
+        final File mFile;
 
         ImageSaver(Image image, File file) {
             mImage = image;
             mFile = file;
         }
 
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Override
         public void run() {
             ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
@@ -817,7 +818,7 @@ public class Camera2Activity extends BaseCameraActivity {
                  */
                 App.mHandler.post(() -> {
                     setResult(200, getIntent().putExtra("file", mFile.toString()));
-                    finishCalled = true;
+                    mFinishCalled = true;
                     finish();
                 });
             } catch (Exception e) {
@@ -829,7 +830,7 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Compares two {@code Size}s based on their areas.
      */
-    private static class CompareSizesByArea implements Comparator<Size> {
+    static class CompareSizesByArea implements Comparator<Size> {
 
         @Override
         public int compare(Size lhs, Size rhs) {
@@ -849,13 +850,13 @@ public class Camera2Activity extends BaseCameraActivity {
     @Override
     protected void preInitData() {
         mFile = new File(getIntent().getStringExtra("file"));
-        tvCameraHint.setText(getIntent().getStringExtra("hint"));
+        mTvCameraHint.setText(getIntent().getStringExtra("hint"));
         if (getIntent().getBooleanExtra("hideBounds", false)) {
-            viewDark0.setVisibility(View.INVISIBLE);
-            viewDark1.setVisibility(View.INVISIBLE);
+            mViewDark0.setVisibility(View.INVISIBLE);
+            mViewDark1.setVisibility(View.INVISIBLE);
         }
         mMaxPicturePixels = getIntent().getIntExtra("maxPicturePixels", 3840 * 2160);
-        RxView.clicks(ivCameraButton)
+        RxView.clicks(mIvCameraButton)
               /**
                * 防止手抖连续多次点击造成错误
                */
@@ -882,7 +883,7 @@ public class Camera2Activity extends BaseCameraActivity {
 
     @Override
     public void onBackPressed() {
-        finishCalled = true;
+        mFinishCalled = true;
         finish();
     }
 
@@ -891,6 +892,6 @@ public class Camera2Activity extends BaseCameraActivity {
         super.onPause();
         closeCamera();
         stopBackgroundThread();
-        if (!finishCalled) finish();
+        if (!mFinishCalled) finish();
     }
 }

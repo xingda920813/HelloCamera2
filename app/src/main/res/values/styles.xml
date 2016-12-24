@@ -1,14 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
-        <item name="android:navigationBarColor" tools:targetApi="21">@color/colorNavBar</item>
         <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="lollipop">true</item>
 
         <item name="windowActionBar">false</item>

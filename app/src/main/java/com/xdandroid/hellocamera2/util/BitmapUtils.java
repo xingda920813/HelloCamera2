@@ -110,9 +110,10 @@ public class BitmapUtils {
      * @param fileName 文件名
      * @return 文件对应的File.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File writeBitmapToFile(Bitmap bitmap, String fileName) {
         //FileProvider中指定的目录
-        File dir = new File(App.app.getCacheDir(), "images");
+        File dir = new File(App.sApp.getCacheDir(), "images");
         if (!dir.exists()) dir.mkdirs();
         File file = new File(dir, fileName);
         FileOutputStream fos;

@@ -5,6 +5,7 @@ import android.content.*;
 import android.hardware.*;
 import android.view.*;
 
+@SuppressWarnings("deprecation")
 @SuppressLint("ViewConstructor")
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -15,9 +16,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         void onThrowable(Throwable throwable, boolean showToast);
     }
 
-    private SurfaceHolder mHolder;
-    private Camera mCamera;
-    private ThrowableListener mThrowableListener;
+    SurfaceHolder mHolder;
+    Camera mCamera;
+    ThrowableListener mThrowableListener;
 
     public CameraPreview(Context context, Camera camera, ThrowableListener l) {
         super(context);

@@ -4,7 +4,6 @@ import android.graphics.drawable.*;
 import android.net.*;
 import android.support.annotation.*;
 import android.text.*;
-import android.util.*;
 import android.view.*;
 
 import com.facebook.drawee.backends.pipeline.*;
@@ -16,14 +15,14 @@ import com.facebook.imagepipeline.request.*;
 
 public class FrescoUtils {
 
-    private FrescoUtils() {}
+    FrescoUtils() {}
 
     public static class FrescoInner {
 
-        private FrescoInner() {}
+        FrescoInner() {}
 
-        private String url;
-        private ResizeOptions resizeOptions;
+        String url;
+        ResizeOptions resizeOptions;
 
         /**
          * 适配AutoLayout的辅助方法.

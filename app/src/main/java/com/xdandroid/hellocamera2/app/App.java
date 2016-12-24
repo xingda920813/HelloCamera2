@@ -20,12 +20,12 @@ public class App extends Application {
      * 主线程Handler.
      */
     public static Handler mHandler;
-    public static App app;
+    public static App sApp;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        app = this;
+        sApp = this;
         mHandler = new Handler();
         Fresco.initialize(this, ImagePipelineConfig
                 .newBuilder(this)

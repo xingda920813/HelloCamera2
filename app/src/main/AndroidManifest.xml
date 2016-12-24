@@ -36,10 +36,10 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.WhiteWindow"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden|keyboard|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -48,18 +48,18 @@
         <activity
             android:name=".CameraActivity"
             android:label="@string/title_activity_camera"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden|keyboard|screenLayout">
         </activity>
         <activity
             android:name=".Camera2Activity"
             android:label="@string/title_activity_camera2"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateHidden"
-            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="locale|layoutDirection|orientation|screenSize|keyboardHidden|keyboard|screenLayout">
         </activity>
 
     </application>

@@ -2,6 +2,5 @@
 <resources>
     <color name="colorPrimary">#FFC107</color>
     <color name="colorPrimaryDark">#FFA000</color>
-    <color name="colorAccent">#FFC107</color>
-    <color name="colorNavBar">#000000</color>
+    <color name="colorAccent">#3D98FF</color>
 </resources>

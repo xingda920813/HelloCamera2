@@ -1,6 +1,7 @@
 package com.xdandroid.hellocamera2;
 
 import android.*;
+import android.annotation.SuppressLint;
 import android.content.*;
 import android.content.pm.*;
 import android.net.*;
@@ -28,17 +29,17 @@ import rx.schedulers.*;
 
 public class MainActivity extends BaseActivity {
 
-    @BindView(R.id.iv) SimpleDraweeView iv;
-    @BindView(R.id.btn_takepicture) Button btnTakepicture;
+    @BindView(R.id.iv) SimpleDraweeView mImageView;
+    @BindView(R.id.btn_takepicture) Button mBtnTakePicture;
 
-    private File mFile;
-    private boolean mHasSelectedOnce;
+    File mFile;
+    boolean mHasSelectedOnce;
 
+    @SuppressLint("InflateParams")
     @OnClick(R.id.iv)
     void onImageViewClick(View v) {
         if (mHasSelectedOnce) {
-            View dialogView = LayoutInflater.from(MainActivity.this)
-                                            .inflate(R.layout.dialog, null, false);
+            View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog, null, false);
             SimpleDraweeView ivBig = (SimpleDraweeView) dialogView.findViewById(R.id.iv_dialog_big);
             FrescoUtils.load("file://" + mFile.toString()).into(ivBig);
             AlertDialog dialog = new AlertDialog
@@ -47,7 +48,7 @@ public class MainActivity extends BaseActivity {
             ivBig.setOnClickListener(v1 -> dialog.dismiss());
             dialog.show();
         } else {
-            openContextMenu(btnTakepicture);
+            openContextMenu(mBtnTakePicture);
         }
     }
 
@@ -69,7 +70,7 @@ public class MainActivity extends BaseActivity {
     public boolean onContextItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == 0) {
-            new TedPermission(App.app)
+            new TedPermission(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")
@@ -101,7 +102,7 @@ public class MainActivity extends BaseActivity {
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 1) {
-            new TedPermission(App.app)
+            new TedPermission(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")
@@ -131,7 +132,7 @@ public class MainActivity extends BaseActivity {
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 2) {
-            new TedPermission(App.app)
+            new TedPermission(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")
@@ -196,8 +197,8 @@ public class MainActivity extends BaseActivity {
                           //清除该Uri的Fresco缓存. 若不清除，对于相同文件名的图片，Fresco会直接使用缓存而使得Drawee得不到更新.
                           imagePipeline.evictFromMemoryCache(uri);
                           imagePipeline.evictFromDiskCache(uri);
-                          FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(iv);
-                          btnTakepicture.setText("重新拍照");
+                          FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(mImageView);
+                          mBtnTakePicture.setText("重新拍照");
                           mHasSelectedOnce = true;
                       });
         } else if (requestCode == App.TAKE_PHOTO_SYSTEM) {
@@ -218,8 +219,8 @@ public class MainActivity extends BaseActivity {
                           ImagePipeline imagePipeline = Fresco.getImagePipeline();
                           imagePipeline.evictFromMemoryCache(uri);
                           imagePipeline.evictFromDiskCache(uri);
-                          FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(iv);
-                          btnTakepicture.setText("重新拍照");
+                          FrescoUtils.load("file://" + mFile.toString()).resize(240, 164).into(mImageView);
+                          mBtnTakePicture.setText("重新拍照");
                           mHasSelectedOnce = true;
                       });
         }
@@ -232,6 +233,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void preInitData() {
-        registerForContextMenu(btnTakepicture);
+        registerForContextMenu(mBtnTakePicture);
     }
 }

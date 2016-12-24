@@ -10,6 +10,7 @@ import rx.*;
 import rx.android.schedulers.*;
 import rx.schedulers.*;
 
+@SuppressWarnings("deprecation")
 public class CameraUtils {
 
     /**
@@ -20,6 +21,7 @@ public class CameraUtils {
     /**
      * 找到最佳尺寸后的回调类.
      */
+    @SuppressWarnings("deprecation")
     public abstract class OnBestSizeFoundCallback {
 
         /**

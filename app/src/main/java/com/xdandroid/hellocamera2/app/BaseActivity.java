@@ -5,7 +5,6 @@ import android.support.annotation.*;
 import android.support.v7.widget.*;
 import android.view.*;
 
-import com.xdandroid.hellocamera2.*;
 import com.xdandroid.hellocamera2.R;
 import com.zhy.autolayout.*;
 
@@ -13,7 +12,7 @@ import butterknife.*;
 
 public abstract class BaseActivity extends AutoLayoutActivity {
 
-    private Unbinder unbinder;
+    Unbinder mUnbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -22,7 +21,7 @@ public abstract class BaseActivity extends AutoLayoutActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        unbinder = ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(this);
         preInitData();
     }
 
@@ -47,8 +46,8 @@ public abstract class BaseActivity extends AutoLayoutActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (unbinder != null) {
-            unbinder.unbind();
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
         }
     }
 }

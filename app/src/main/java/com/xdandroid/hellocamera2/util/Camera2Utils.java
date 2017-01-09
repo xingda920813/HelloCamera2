@@ -46,8 +46,7 @@ public class Camera2Utils {
         //Arrays.asList返回的List是不可变的，需重新包装为java.util.ArrayList.
         List<Size> sizeList = new ArrayList<>(immutableSizeList);
         //按面积由大到小排序
-        Collections.sort(sizeList, (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs
-                .getHeight()));
+        Collections.sort(sizeList, (lhs, rhs) -> -compare(lhs.getWidth() * lhs.getHeight(), rhs.getWidth() * rhs.getHeight()));
         for (Size size : sizeList) {
             //非16:9的尺寸无视
             if (!isWide(size)) continue;

@@ -90,8 +90,7 @@ public class CameraUtils {
                 .just(sizeList)
                 //按面积由大到小排序
                 .map(sizes -> {
-                    Collections.sort(sizes,
-                            (lhs, rhs) -> -compare(lhs.width * lhs.height, rhs.width * rhs.height));
+                    Collections.sort(sizes, (lhs, rhs) -> -compare(lhs.width * lhs.height, rhs.width * rhs.height));
                     return sizes;
                 })
                 //一个一个地激发事件
@@ -118,8 +117,7 @@ public class CameraUtils {
                             } else {
                                 callback.bestSizeJustFound(sizeList.get(0));
                             }
-                        },
-                        () -> {
+                        }, () -> {
                             if (tooLargeSizes.size() > 0) {
                                 callback.bestSizeJustFound(tooLargeSizes.get(0));
                             } else {

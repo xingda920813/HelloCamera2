@@ -21,8 +21,8 @@ public class FrescoUtils {
 
         FrescoInner() {}
 
-        String url;
-        ResizeOptions resizeOptions;
+        String mUrl;
+        ResizeOptions mResizeOptions;
 
         /**
          * 适配AutoLayout的辅助方法.
@@ -33,22 +33,22 @@ public class FrescoUtils {
          * @return FrescoInner
          */
         public FrescoInner resize(int widthDp, int heightDp) {
-            resizeOptions = new ResizeOptions(CommonUtils.dp2px(widthDp), CommonUtils.dp2px(heightDp));
+            mResizeOptions = new ResizeOptions(CommonUtils.dp2px(widthDp), CommonUtils.dp2px(heightDp));
             return this;
         }
 
         public void into(SimpleDraweeView v) {
-            if (TextUtils.isEmpty(url)) {
+            if (TextUtils.isEmpty(mUrl)) {
                 v.setImageURI(Uri.EMPTY);
                 return;
             }
 
             PipelineDraweeControllerBuilder controllerBuilder = Fresco.newDraweeControllerBuilder();
 
-            ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url));
+            ImageRequestBuilder requestBuilder = ImageRequestBuilder.newBuilderWithSource(Uri.parse(mUrl));
 
-            if (resizeOptions != null) {
-                requestBuilder.setResizeOptions(resizeOptions);
+            if (mResizeOptions != null) {
+                requestBuilder.setResizeOptions(mResizeOptions);
             } else
 
             /**
@@ -110,7 +110,7 @@ public class FrescoUtils {
 
     public static FrescoInner load(String url) {
         FrescoInner frescoInner = new FrescoInner();
-        frescoInner.url = url;
+        frescoInner.mUrl = url;
         return frescoInner;
     }
 }

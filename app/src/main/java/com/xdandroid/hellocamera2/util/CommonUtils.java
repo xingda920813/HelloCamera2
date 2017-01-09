@@ -56,9 +56,7 @@ public class CommonUtils {
         int navBarHeightInPx = 0;
         Resources rs = App.sApp.getResources();
         int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (id > 0 && hasNavigationBar()) {
-            navBarHeightInPx = rs.getDimensionPixelSize(id);
-        }
+        if (id > 0 && hasNavigationBar()) navBarHeightInPx = rs.getDimensionPixelSize(id);
         return navBarHeightInPx;
     }
 

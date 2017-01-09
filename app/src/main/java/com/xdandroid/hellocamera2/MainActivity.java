@@ -94,11 +94,7 @@ public class MainActivity extends BaseActivity {
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                             startActivityForResult(intent, App.TAKE_PHOTO_SYSTEM);
                         }
-
-                        @Override
-                        public void onPermissionDenied(ArrayList<String> arrayList) {
-
-                        }
+                        public void onPermissionDenied(ArrayList<String> arrayList) {}
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 1) {
@@ -124,11 +120,7 @@ public class MainActivity extends BaseActivity {
                             intent.putExtra("maxPicturePixels", 3840 * 2160);
                             startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
                         }
-
-                        @Override
-                        public void onPermissionDenied(ArrayList<String> arrayList) {
-
-                        }
+                        public void onPermissionDenied(ArrayList<String> arrayList) {}
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 2) {
@@ -164,11 +156,7 @@ public class MainActivity extends BaseActivity {
                             intent.putExtra("maxPicturePixels", 3840 * 2160);
                             startActivityForResult(intent, App.TAKE_PHOTO_CUSTOM);
                         }
-
-                        @Override
-                        public void onPermissionDenied(ArrayList<String> arrayList) {
-
-                        }
+                        public void onPermissionDenied(ArrayList<String> arrayList) {}
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         }

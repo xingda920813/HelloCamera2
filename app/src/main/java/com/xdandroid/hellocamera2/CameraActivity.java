@@ -79,10 +79,7 @@ public class CameraActivity extends BaseCameraActivity {
                                   if (mFile.exists()) mFile.delete();
                                   FileOutputStream fos = new FileOutputStream(mFile);
                                   fos.write(data);
-                                  try {
-                                      fos.close();
-                                  } catch (Exception ignored) {
-                                  }
+                                  try {fos.close();} catch (Exception ignored) {}
                                   subscriber.onNext(200);
                               } catch (Exception e) {
                                   subscriber.onError(e);
@@ -114,8 +111,7 @@ public class CameraActivity extends BaseCameraActivity {
                       }
                       mCamera = camera;
                       mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
-                          if (showToast)
-                              Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                          if (showToast) Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
                           mFinishCalled = true;
                           finish();
                       });
@@ -128,9 +124,7 @@ public class CameraActivity extends BaseCameraActivity {
         Camera.Parameters params = mCamera.getParameters();
         //若相机支持自动开启/关闭闪光灯，则使用. 否则闪光灯总是关闭的.
         List<String> flashModes = params.getSupportedFlashModes();
-        if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) {
-            params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-        }
+        if (flashModes != null && flashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)) params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         mPreviewBestFound = false;
         mPictureBestFound = false;
         //寻找最佳预览尺寸，即满足16:9比例，且不超过1920x1080的最大尺寸;若找不到，则使用满足16:9的最大尺寸.
@@ -176,8 +170,7 @@ public class CameraActivity extends BaseCameraActivity {
                       .flatMap(aLong -> {
                           CameraUtils.autoFocus(mCamera);
                           return Observable.interval(8, TimeUnit.SECONDS);
-                      })
-                      .subscribe(aLong -> CameraUtils.autoFocus(mCamera));
+                      }).subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }
 

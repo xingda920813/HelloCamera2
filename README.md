@@ -1,5 +1,8 @@
 # HelloCamera2
-Android 自定义相机 ： 可定制的UI, 压缩到指定分辨率级别, 使用代码自动裁剪指定区域, 大图预览, Camera / Camera2 API 的使用.
+
+[中文 README](https://github.com/xingda920813/HelloCamera2/blob/master/README_zh.md)
+
+Android Custom Camera: Customizable UI, Compressing To Specific Resolution Level, Clipping Specific Zone Programmatically, Picture Preview, Usage of Camera and Camera2 API.
 
 ![Alt text](https://raw.githubusercontent.com/xingda920813/HelloCamera2/master/screenshot_main.png)
 
@@ -7,111 +10,117 @@ Android 自定义相机 ： 可定制的UI, 压缩到指定分辨率级别, 使�
 
 ![Alt text](https://raw.githubusercontent.com/xingda920813/HelloCamera2/master/screenshot_preview.png)
 
-可选系统相机、自定义相机 (Camera API)、自定义相机 (Camera2 API)
+You can choose system camera, custom camera (Camera API) and custom camera (Camera2 API).
 
-详见 Sample App 的代码及注释.
+Please refer to codes and comments of the sample app.
 
-### 系统相机 :
+### System camera:
 
-使用 FileProvider 指定文件保存路径，支持 Android N，target API 24 时不会出现 FileUriExposedException.
+Using FileProvider to specify the file save path, supports Android N, no FileUriExposedException will be thrown when targeting API 24+.
 
-拍照完成后，文件已被保存到FileProvider指定的目录和文件名 :
+After taking picture, the file is already saved to the path with the file name FileProvider specified before:
 
-(1) 按面积压缩照片到1920x1080(约207万像素)像素数，保持宽高比不变，图像不会被拉伸变形;
+(1) Compress the picture to 1920x1080 (approximately 2070k pixels) pixels by area, keeping the aspect ratio unchanged, so the image will not be distorted;
 
-(2) 智能旋转，若图片的宽小于高，则逆时针旋转90°; 保证图片的宽始终大于高;
+(2) Intelligent rotation, if the picture's width is less than height, then counterclockwise rotate of 90°, to ensure that the picture's width is always greater than height;
 
-(3) 将图像写入文件.
+(3) Save the image to file.
 
-### 自定义相机 (Camera API / Camera2 API) :
+### Custom camera (Camera API / Camera2 API):
 
-特性 :
-
-```
-在 Android Kitkat 及以前版本的 Android 中, 使用 Camera API;
-在 Android Lollipop 及以后版本的 Android 中, 使用 Camera2 API.
-
-使用算法寻找最佳预览/照片尺寸
-自动闪光灯控制
-连续对焦模式
-```
-
-通过 startActivityForResult 启动 CameraActivity / Camera2Activity，传入 4 个 Extra :
+Characters:
 
 ```
-//文件保存的路径和名称
+In Android Kitkat and lower, use Camera API;
+In Android Lollipop and higher, use Camera2 API.
+
+Find the best preview / pictrue size using algorithm;
+Automatic flash control;
+Continuous focus mode;
+```
+
+Start CameraActivity / Camera2Activity by calling startActivityForResult，passing 4 extras:
+
+```
+//The path and the file name to save
 intent.putExtra("file", mFile.toString());
 
-//拍照时的提示文本
-intent.putExtra("hint", "请将证件放入框内。将裁剪图片，只保留框内区域的图像");
+//Hint text when taking picture
+intent.putExtra("hint", "Please put documents into the box. The picture will be cropped, leaving only the area within the frame.");
 
-//是否使用整个画面作为取景区域(全部为亮色区域)
+//Whether to use the entire screen as the framing area (all the screen is bright area)
 intent.putExtra("hideBounds", false);
 
-//最大允许的拍照尺寸（像素数）
+//Maximum allowed picture size (pixels)
 intent.putExtra("maxPicturePixels", 3840 * 2160);
 ```
-拍照完成后，在 onActivityResult 的 Intent 里，存有一个名为 file 的 String Extra，即为文件被保存的目录和文件名 :
 
-(1) 按面积压缩照片到1920x1080(约207万像素)像素数，保持宽高比不变，图像不会被拉伸变形;
+After taking picture, in the Intent parameter of onActivityResult, there is an extra named "file", which is the path and the file name the file was saved to:
 
-(2) 按取景框（亮色区域）进行裁剪，只保留框内区域的图像;
+(1) Compress the picture to 1920x1080 (approximately 2070k pixels) pixels by area, keeping the aspect ratio unchanged, so the image will not be distorted;
 
-(3) 将图像写入文件.
+(2) Crop the image by framing area (bright area), leaving only the image in the frame;
 
-### 算法说明 :
+(3) Save the image to file.
 
-#### 确定使用的预览尺寸 :
-从sizeArray中找到满足16:9比例，且不超过1920x1080的最大Size.
+### Description of the algorithm:
 
-若找不到，则选择满足16:9比例的最大Size（像素数可能超过1920x1080).
+#### Determines the preview size:
 
-若仍找不到，返回最大Size.
+Find the max size in the sizeArray, which meets the 16: 9 ratio, and no more than 1920x1080.
 
-预览尺寸不要超过1920x1080，否则相机带宽吃紧，这也是Camera2 API的要求.
+If not found, select the maximum size that meets the 16: 9 aspect ratio (the number of pixels may exceed 1920x1080).
 
-#### 确定使用的照片尺寸 :
-从sizeArray中找到满足16:9比例，且不超过maxPicturePixels指定的像素数的最大Size.
+If it is still not found, return the maximum Size.
 
-若找不到，则选择满足16:9比例的最大Size（像素数可能超过maxPicturePixels).
+Preview size should not be more than 1920x1080, otherwise the camera bandwidth will be tight. This is also the requirements of Camera2 API.
 
-若仍找不到，返回最大Size.
+#### Determines the picture size:
 
-maxPicturePixels通过Intent的Extra传入.
+Find the maximum Size from the sizeArray that satisfies the 16: 9 aspect ratio and does not exceed the number of pixels specified by maxPicturePixels.
 
-#### 压缩到指定分辨率级别 :
-将图片文件压缩到所需的大小，返回位图对象.
+If not found, select the maximum Size that meets the 16: 9 aspect ratio (the number of pixels may exceed maxPicturePixels).
 
-若原图尺寸小于需要压缩到的尺寸，则返回原图.
+If it is still not found, return the maximum Size.
 
-该方法通过计算分辨率面积之比得到压缩比，考虑了图片的宽高比可能与maxPicturePixels中指定的分辨率的宽高比不同的情况，因此不存在图片方向、宽高比的问题.
+maxPicturePixels is passed into by the extra of Intent.
 
-#### 裁剪指定区域 :
-将拍照得到的图片按照取景框（亮色区域）的范围进行裁剪.
+#### Compressed to the specified resolution level:
 
-对于1280x720的屏幕，裁剪起始点为坐标(52, 80)，裁剪后，位图尺寸为896x588.（由layout xml定义的布局计算得到）
+Compresses the image file to the desired size and returns a Bitmap object.
 
-以上参数将按照图片的实际大小，进行等比例换算。
+If the original image size is smaller than the size to be compressed, return to the original.
 
-设备有无虚拟导航栏均能裁剪到正确的区域。
+In this method, the compression ratio is calculated by calculating the area ratio of the resolution. Considering that the aspect ratio of the picture may be different from the resolution specified in maxPicturePixels, there is no problem of picture orientation and aspect ratio.
 
-#### 将Bitmap写入文件 :
-将Bitmap写入文件，文件位于内置存储上该应用包名目录的cache子目录中.
+#### Crop the specified area:
 
-JPEG为硬件加速，O(1)时间复杂度，而PNG为O(n)，速度要慢很多，WEBP不常用
+Crop the taken picture by framing area (bright area).
 
-90%的品质已高于超精细(85%)的标准，已非常精细
+For a 1280x720 screen, the starting point for the crop is the point(52, 80). After cropping, the bitmap size is 896x588. (Calculated from the layout defined by layout xml)
+
+The above parameters will be scale converted by the actual size of the picture.
+
+No matter the device has a virtual navigation bar or not, the image can be cropped to the correct area.
+
+#### Write Bitmap to file:
+
+Write Bitmap to file. File is located at /data/data/${package-name}/cache/.
+
+Compression to JPEG is hardware accelerated with O(1) time complexity, while compression to PNG is O(n) time complexity.
+
+90% of the quality has been higher than the ultra-fine (85%) quality
 
 #### FrescoUtils :
 ```
 /**
-* 适配AutoLayout的辅助方法.
-* 将控件的width(dp), height(dp)传入resize(int, int)，即可将图片向下缩放(DownScale)到与控件一样大.
+* Helper method to fit AutoLayout.
+* pass width(dp) and height(dp) of the image widget to resize(int, int) to downscale the image to the same size as the image widget.
 */
 FrescoInner FrescoInner.resize(int widthDp, int heightDp);
 
 /**
-* 增加了对 DraweeView 的 wrap_content / ViewGroup.LayoutParams.WRAP_CONTENT 属性的支持.
+* Adds support of wrap_content / ViewGroup.LayoutParams.WRAP_CONTENT for DraweeView.
 */
 void FrescoInner.into(SimpleDraweeView v);
 ```

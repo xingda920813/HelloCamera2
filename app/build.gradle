@@ -41,5 +41,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:+'
     apt 'com.jakewharton:butterknife-compiler:+'
     compile 'com.jakewharton.rxbinding:rxbinding:+'
-    compile 'com.github.ParkSangGwon:TedPermission:+'
+    compile 'gun0912.ted:tedpermission:+'
 }

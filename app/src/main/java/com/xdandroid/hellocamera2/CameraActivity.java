@@ -4,7 +4,7 @@ import android.hardware.*;
 import android.view.*;
 import android.widget.*;
 
-import com.jakewharton.rxbinding.view.*;
+import com.jakewharton.rxbinding2.view.*;
 import com.xdandroid.hellocamera2.app.*;
 import com.xdandroid.hellocamera2.util.*;
 import com.xdandroid.hellocamera2.view.*;
@@ -14,9 +14,9 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import butterknife.*;
-import rx.Observable;
-import rx.android.schedulers.*;
-import rx.schedulers.*;
+import io.reactivex.*;
+import io.reactivex.android.schedulers.*;
+import io.reactivex.schedulers.*;
 
 /**
  * Camera API. Android KitKat 及以前版本的 Android 使用 Camera API.
@@ -73,18 +73,18 @@ public class CameraActivity extends BaseCameraActivity {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> {
                   if (mCamera == null) return;
-                  mCamera.takePicture(null, null, (data, camera) -> Observable
-                          .create((Observable.OnSubscribe<Integer>) subscriber -> {
+                  mCamera.takePicture(null, null, (data, camera) -> Flowable
+                          .create((FlowableOnSubscribe<Integer>) emitter -> {
                               try {
                                   if (mFile.exists()) mFile.delete();
                                   FileOutputStream fos = new FileOutputStream(mFile);
                                   fos.write(data);
                                   try {fos.close();} catch (Exception ignored) {}
-                                  subscriber.onNext(200);
+                                  emitter.onNext(200);
                               } catch (Exception e) {
-                                  subscriber.onError(e);
+                                  emitter.onError(e);
                               }
-                          }).subscribeOn(Schedulers.io())
+                          }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io())
                           .observeOn(AndroidSchedulers.mainThread())
                           .subscribe(integer -> {
                               setResult(integer, getIntent().putExtra("file", mFile.toString()));
@@ -98,26 +98,26 @@ public class CameraActivity extends BaseCameraActivity {
     }
 
     void initCamera() {
-        Observable.create((Observable.OnSubscribe<Camera>) subscriber -> subscriber.onNext(CameraUtils
-                .getCamera()))
-                  .subscribeOn(Schedulers.newThread())
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(camera -> {
-                      if (camera == null) {
-                          Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-                          mFinishCalled = true;
-                          finish();
-                          return;
-                      }
-                      mCamera = camera;
-                      mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
-                          if (showToast) Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
-                          mFinishCalled = true;
-                          finish();
-                      });
-                      mFlCameraPreview.addView(mPreview);
-                      initParams();
-                  });
+        Flowable.create((FlowableOnSubscribe<Camera>) e -> e.onNext(CameraUtils.getCamera()),
+                BackpressureStrategy.BUFFER)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(camera -> {
+                    if (camera == null) {
+                        Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+                        mFinishCalled = true;
+                        finish();
+                        return;
+                    }
+                    mCamera = camera;
+                    mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
+                        if (showToast) Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
+                        mFinishCalled = true;
+                        finish();
+                    });
+                    mFlCameraPreview.addView(mPreview);
+                    initParams();
+                });
     }
 
     void initParams() {
@@ -166,10 +166,10 @@ public class CameraActivity extends BaseCameraActivity {
             //点击屏幕进行一次自动对焦.
             mFlCameraPreview.setOnClickListener(v -> CameraUtils.autoFocus(mCamera));
             //4秒后进行第一次自动对焦，之后每隔8秒进行一次自动对焦.
-            Observable.timer(4, TimeUnit.SECONDS)
-                      .flatMap(aLong -> {
+            Flowable.timer(4, TimeUnit.SECONDS)
+                    .flatMap(aLong -> {
                           CameraUtils.autoFocus(mCamera);
-                          return Observable.interval(8, TimeUnit.SECONDS);
+                          return Flowable.interval(8, TimeUnit.SECONDS);
                       }).subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }

@@ -5,10 +5,10 @@ import android.support.annotation.*;
 
 import java.util.*;
 
-import rx.Observable;
-import rx.*;
-import rx.android.schedulers.*;
-import rx.schedulers.*;
+import io.reactivex.*;
+import io.reactivex.android.schedulers.*;
+import io.reactivex.disposables.*;
+import io.reactivex.schedulers.*;
 
 @SuppressWarnings("deprecation")
 public class CameraUtils {
@@ -16,7 +16,7 @@ public class CameraUtils {
     /**
      * 寻找最佳尺寸的Subscription，用于在找到最佳尺寸后及时取消订阅，防止内存泄漏.
      */
-    public Subscription subscription;
+    public Disposable mDisposable;
 
     /**
      * 找到最佳尺寸后的回调类.
@@ -31,7 +31,7 @@ public class CameraUtils {
          * @param size 最佳尺寸的Camera.Size
          */
         void bestSizeJustFound(Camera.Size size) {
-            if (subscription != null) subscription.unsubscribe();
+            if (mDisposable != null) mDisposable.dispose();
             onBestSizeFound(size);
         }
 
@@ -86,7 +86,7 @@ public class CameraUtils {
     public void findBestSize(boolean forTakingPicture, List<Camera.Size> sizeList, OnBestSizeFoundCallback callback, long maxPicturePixels) {
         //满足16:9，但超过maxAcceptedPixels的过大Size
         List<Camera.Size> tooLargeSizes = new ArrayList<>();
-        subscription = Observable
+        mDisposable = Flowable
                 .just(sizeList)
                 //按面积由大到小排序
                 .map(sizes -> {
@@ -94,7 +94,7 @@ public class CameraUtils {
                     return sizes;
                 })
                 //一个一个地激发事件
-                .flatMap(Observable::from)
+                .flatMap(Flowable::fromIterable)
                 //非16:9的尺寸无视
                 .filter(CameraUtils::isWide)
                 .filter(size -> {

@@ -12,7 +12,7 @@ import android.util.Size;
 import android.view.*;
 import android.widget.*;
 
-import com.jakewharton.rxbinding.view.*;
+import com.jakewharton.rxbinding2.view.*;
 import com.xdandroid.hellocamera2.app.*;
 import com.xdandroid.hellocamera2.util.*;
 
@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import butterknife.*;
-import rx.android.schedulers.*;
+import io.reactivex.android.schedulers.*;
 
 /**
  * Camera2 API. Android Lollipop 及以后版本的 Android 使用 Camera2 API.

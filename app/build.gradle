@@ -3,12 +3,12 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.xdandroid.hellocamera2"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
@@ -41,5 +41,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:+'
     apt 'com.jakewharton:butterknife-compiler:+'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.+'
-    compile 'gun0912.ted:tedpermission:+'
+    compile 'gun0912.ted:tedpermission:2.+'
+    compile 'gun0912.ted:tedpermission-rx2:2.+'
 }

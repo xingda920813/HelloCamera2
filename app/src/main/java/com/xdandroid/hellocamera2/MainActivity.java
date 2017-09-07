@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
     public boolean onContextItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == 0) {
-            new TedPermission(App.sApp)
+            TedPermission.with(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")
@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity {
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 1) {
-            new TedPermission(App.sApp)
+            TedPermission.with(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")
@@ -124,7 +124,7 @@ public class MainActivity extends BaseActivity {
                     }).setPermissions(new String[]{Manifest.permission.CAMERA})
                     .check();
         } else if (itemId == 2) {
-            new TedPermission(App.sApp)
+            TedPermission.with(App.sApp)
                     .setRationaleMessage("我们需要使用您设备上的相机以完成拍照。\n当 Android 系统请求将相机权限授予 HelloCamera2 时，请选择『允许』。")
                     .setDeniedMessage("如果您不对 HelloCamera2 授予相机权限，您将不能完成拍照。")
                     .setRationaleConfirmText("确定")

@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 import butterknife.*;
 import io.reactivex.*;
 import io.reactivex.android.schedulers.*;
+import io.reactivex.functions.*;
 import io.reactivex.schedulers.*;
 
 /**
@@ -98,17 +99,10 @@ public class CameraActivity extends BaseCameraActivity {
     }
 
     void initCamera() {
-        Flowable.create((FlowableOnSubscribe<Camera>) e -> e.onNext(CameraUtils.getCamera()),
-                BackpressureStrategy.BUFFER)
+        Flowable.create(CameraUtils.getCameraOnSubscribe(), BackpressureStrategy.BUFFER)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(camera -> {
-                    if (camera == null) {
-                        Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
-                        mFinishCalled = true;
-                        finish();
-                        return;
-                    }
                     mCamera = camera;
                     mPreview = new CameraPreview(CameraActivity.this, mCamera, (throwable, showToast) -> {
                         if (showToast) Toast.makeText(App.sApp, "开启相机预览失败，再试一次吧", Toast.LENGTH_LONG).show();
@@ -117,6 +111,11 @@ public class CameraActivity extends BaseCameraActivity {
                     });
                     mFlCameraPreview.addView(mPreview);
                     initParams();
+                }, t -> {
+                    t.printStackTrace();
+                    Toast.makeText(App.sApp, "相机开启失败，再试一次吧", Toast.LENGTH_LONG).show();
+                    mFinishCalled = true;
+                    finish();
                 });
     }
 
@@ -168,9 +167,9 @@ public class CameraActivity extends BaseCameraActivity {
             //4秒后进行第一次自动对焦，之后每隔8秒进行一次自动对焦.
             Flowable.timer(4, TimeUnit.SECONDS)
                     .flatMap(aLong -> {
-                          CameraUtils.autoFocus(mCamera);
-                          return Flowable.interval(8, TimeUnit.SECONDS);
-                      }).subscribe(aLong -> CameraUtils.autoFocus(mCamera));
+                        CameraUtils.autoFocus(mCamera);
+                        return Flowable.interval(8, TimeUnit.SECONDS);
+                    }).subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }
 

@@ -445,7 +445,6 @@ public class Camera2Activity extends BaseCameraActivity {
     /**
      * Opens the camera.
      */
-    @SuppressWarnings("MissingPermission")
     void openCamera(int width, int height) {
         setUpCameraOutputs(width, height);
         configureTransform(width, height);

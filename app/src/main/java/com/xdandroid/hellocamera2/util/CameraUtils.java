@@ -38,15 +38,18 @@ public class CameraUtils {
         public abstract void onBestSizeFound(Camera.Size size);
     }
 
-    @Nullable
-    public static Camera getCamera() {
-        Camera camera = null;
-        try {
-            camera = Camera.open();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return camera;
+    public static FlowableOnSubscribe<Camera> getCameraOnSubscribe() {
+        return e -> {
+            Camera c;
+            try {
+                c = Camera.open();
+            } catch (Throwable t) {
+                e.onError(t);
+                return;
+            }
+            if (c != null) e.onNext(c);
+            else e.onError(new RuntimeException("Camera.open() failed."));
+        };
     }
 
     /**

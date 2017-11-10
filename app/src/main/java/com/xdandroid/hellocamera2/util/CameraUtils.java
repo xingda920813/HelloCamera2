@@ -1,11 +1,11 @@
 package com.xdandroid.hellocamera2.util;
 
 import android.hardware.*;
-import android.support.annotation.*;
 
 import java.util.*;
 
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.*;
 import io.reactivex.disposables.*;
 import io.reactivex.schedulers.*;
@@ -38,7 +38,7 @@ public class CameraUtils {
         public abstract void onBestSizeFound(Camera.Size size);
     }
 
-    public static FlowableOnSubscribe<Camera> getCameraOnSubscribe() {
+    public static ObservableOnSubscribe<Camera> getCameraOnSubscribe() {
         return e -> {
             Camera c;
             try {
@@ -89,7 +89,7 @@ public class CameraUtils {
     public void findBestSize(boolean forTakingPicture, List<Camera.Size> sizeList, OnBestSizeFoundCallback callback, long maxPicturePixels) {
         //满足16:9，但超过maxAcceptedPixels的过大Size
         List<Camera.Size> tooLargeSizes = new ArrayList<>();
-        mDisposable = Flowable
+        mDisposable = Observable
                 .just(sizeList)
                 //按面积由大到小排序
                 .map(sizes -> {
@@ -97,7 +97,7 @@ public class CameraUtils {
                     return sizes;
                 })
                 //一个一个地激发事件
-                .flatMap(Flowable::fromIterable)
+                .flatMap(Observable::fromIterable)
                 //非16:9的尺寸无视
                 .filter(CameraUtils::isWide)
                 .filter(size -> {

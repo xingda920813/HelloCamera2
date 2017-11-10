@@ -15,8 +15,8 @@ import java.util.concurrent.*;
 
 import butterknife.*;
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.*;
-import io.reactivex.functions.*;
 import io.reactivex.schedulers.*;
 
 /**
@@ -74,8 +74,8 @@ public class CameraActivity extends BaseCameraActivity {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aVoid -> {
                   if (mCamera == null) return;
-                  mCamera.takePicture(null, null, (data, camera) -> Flowable
-                          .create((FlowableOnSubscribe<Integer>) emitter -> {
+                  mCamera.takePicture(null, null, (data, camera) -> Observable
+                          .create((ObservableOnSubscribe<Integer>) emitter -> {
                               try {
                                   if (mFile.exists()) mFile.delete();
                                   FileOutputStream fos = new FileOutputStream(mFile);
@@ -85,7 +85,7 @@ public class CameraActivity extends BaseCameraActivity {
                               } catch (Exception e) {
                                   emitter.onError(e);
                               }
-                          }, BackpressureStrategy.BUFFER).subscribeOn(Schedulers.io())
+                          }).subscribeOn(Schedulers.io())
                           .observeOn(AndroidSchedulers.mainThread())
                           .subscribe(integer -> {
                               setResult(integer, getIntent().putExtra("file", mFile.toString()));
@@ -99,7 +99,7 @@ public class CameraActivity extends BaseCameraActivity {
     }
 
     void initCamera() {
-        Flowable.create(CameraUtils.getCameraOnSubscribe(), BackpressureStrategy.BUFFER)
+        Observable.create(CameraUtils.getCameraOnSubscribe())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(camera -> {
@@ -165,10 +165,10 @@ public class CameraActivity extends BaseCameraActivity {
             //点击屏幕进行一次自动对焦.
             mFlCameraPreview.setOnClickListener(v -> CameraUtils.autoFocus(mCamera));
             //4秒后进行第一次自动对焦，之后每隔8秒进行一次自动对焦.
-            Flowable.timer(4, TimeUnit.SECONDS)
+            Observable.timer(4, TimeUnit.SECONDS)
                     .flatMap(aLong -> {
                         CameraUtils.autoFocus(mCamera);
-                        return Flowable.interval(8, TimeUnit.SECONDS);
+                        return Observable.interval(8, TimeUnit.SECONDS);
                     }).subscribe(aLong -> CameraUtils.autoFocus(mCamera));
         }
     }

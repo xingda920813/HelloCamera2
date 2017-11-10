@@ -23,7 +23,7 @@ import java.io.*;
 import java.util.*;
 
 import butterknife.*;
-import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.*;
 import io.reactivex.schedulers.*;
 
@@ -169,16 +169,16 @@ public class MainActivity extends BaseActivity {
         if (resultCode != RESULT_OK && resultCode != 200) return;
         if (requestCode == App.TAKE_PHOTO_CUSTOM) {
             mFile = new File(data.getStringExtra("file"));
-            Flowable.just(mFile)
-                    //将File解码为Bitmap
-                    .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
-                    //裁剪Bitmap
-                    .map(BitmapUtils::crop)
-                    //将Bitmap写入文件
-                    .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(file -> {
+            Observable.just(mFile)
+                      //将File解码为Bitmap
+                      .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
+                      //裁剪Bitmap
+                      .map(BitmapUtils::crop)
+                      //将Bitmap写入文件
+                      .map(bitmap -> BitmapUtils.writeBitmapToFile(bitmap, "mFile"))
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(file -> {
                           mFile = file;
                           Uri uri = Uri.parse("file://" + mFile.toString());
                           ImagePipeline imagePipeline = Fresco.getImagePipeline();
@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity {
                       });
         } else if (requestCode == App.TAKE_PHOTO_SYSTEM) {
             mFile = CommonUtils.createImageFile("mFile");
-            Flowable.just(mFile)
+            Observable.just(mFile)
                       //读入File，压缩为指定大小的Bitmap
                       .map(file -> BitmapUtils.compressToResolution(file, 1920 * 1080))
                       //系统相机拍出的照片方向可能是竖的，这里判断如果是竖的，就旋转90度变为横向

@@ -1,5 +1,7 @@
 # HelloCamera2
 
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg"></a>
+
 [中文 README](https://github.com/xingda920813/HelloCamera2/blob/master/README_zh.md)
 
 Android Custom Camera: Customizable UI, Compressing To Specific Resolution Level, Clipping Specific Zone Programmatically, Picture Preview, Usage of Camera and Camera2 API.
